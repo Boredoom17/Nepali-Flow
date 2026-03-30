@@ -15,6 +15,7 @@ API_KEYS = [
     os.getenv("YOUTUBE_API_KEY3"),
     os.getenv("YOUTUBE_API_KEY4"),
     os.getenv("YOUTUBE_API_KEY5"),
+    os.getenv("YOUTUBE_API_KEY6"),
 
 ]
 API_KEYS = [k for k in API_KEYS if k]  # remove empty ones
