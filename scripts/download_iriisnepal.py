@@ -18,4 +18,4 @@ print(df.head(3))
 
 # Save
 df.to_csv("data/iriisnepal_raw.csv", index=False)
-print("✅ Saved to data/iriisnepal_raw.csv")
+print("Saved to data/iriisnepal_raw.csv")

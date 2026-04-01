@@ -1,113 +1,146 @@
 import os
-import re
-import pandas as pd
 from datetime import date
 
-BASE_DIR        = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-YOUTUBE_CSV     = os.path.join(BASE_DIR, "data", "youtube_comments_clean.csv")
-IRIIS_CSV       = os.path.join(BASE_DIR, "data", "iriisnepal_raw.csv")
-WIKI_CSV        = os.path.join(BASE_DIR, "data", "wikipedia_nepali.csv")
-OUT_DIR         = os.path.join(BASE_DIR, "data", "merged")
-TODAY           = date.today().isoformat()
+import duckdb
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+YOUTUBE_CSV = os.path.join(BASE_DIR, "data", "youtube_comments_clean.csv")
+IRIIS_CSV = os.path.join(BASE_DIR, "data", "iriisnepal_raw.csv")
+WIKI_CSV = os.path.join(BASE_DIR, "data", "wikipedia_nepali.csv")
+NEWS_CSV = os.path.join(BASE_DIR, "data", "nepali_news.csv")
+OUT_DIR = os.path.join(BASE_DIR, "data", "merged")
+TODAY = date.today().isoformat()
 
 os.makedirs(OUT_DIR, exist_ok=True)
 
-# ─────────────────────────────────────────
-# LOAD YOUTUBE
-# ─────────────────────────────────────────
-print("Loading YouTube comments...")
-yt = pd.read_csv(YOUTUBE_CSV, usecols=["text", "script", "lang"])
-yt["source"]         = "youtube_comments"
-yt["domain"]         = "colloquial"
-yt["date_collected"] = TODAY
-yt["license"]        = "CC BY 4.0"
-yt = yt[["text", "source", "domain", "script", "lang", "date_collected", "license"]]
-print(f"  YouTube rows: {len(yt):,}")
+FULL_PATH = os.path.join(OUT_DIR, "nepali_corpus_full.parquet")
+COLLOQUIAL_PATH = os.path.join(OUT_DIR, "nepali_corpus_colloquial.parquet")
+FORMAL_PATH = os.path.join(OUT_DIR, "nepali_corpus_formal.parquet")
+WIKI_PATH = os.path.join(OUT_DIR, "nepali_corpus_wikipedia.parquet")
+ROMAN_PATH = os.path.join(OUT_DIR, "nepali_corpus_roman.parquet")
+CODEMIXED_PATH = os.path.join(OUT_DIR, "nepali_corpus_codemixed.parquet")
 
-# ─────────────────────────────────────────
-# LOAD WIKIPEDIA
-# ─────────────────────────────────────────
-print("\nLoading Wikipedia...")
-wiki = pd.read_csv(WIKI_CSV)
-wiki["source"]         = "wikipedia_nepali"
-wiki["domain"]         = "encyclopedia"
-wiki["script"]         = "devanagari"
-wiki["lang"]           = "ne"
-wiki["date_collected"] = TODAY
-wiki["license"]        = "CC BY-SA 4.0"
-wiki = wiki[["text", "source", "domain", "script", "lang", "date_collected", "license"]]
-print(f"  Wikipedia rows: {len(wiki):,}")
+con = duckdb.connect()
+con.execute("PRAGMA threads = 2")
+con.execute("PRAGMA preserve_insertion_order = false")
+con.execute("PRAGMA memory_limit = '8GB'")
+con.execute(f"PRAGMA temp_directory = '{os.path.join(OUT_DIR, 'duckdb_tmp')}'")
 
-# ─────────────────────────────────────────
-# LOAD IRIISNEPAL IN CHUNKS
-# ─────────────────────────────────────────
-print("\nLoading IRIISNEPAL in chunks...")
-chunks = []
-chunk_size = 100_000
-total_raw = 0
-total_kept = 0
+print("Building unified corpus with DuckDB...")
+print("  YouTube:      {0}".format(YOUTUBE_CSV))
+print("  Wikipedia:    {0}".format(WIKI_CSV))
+print("  IRIISNEPAL:   {0}".format(IRIIS_CSV))
+print("  News:         {0}".format(NEWS_CSV))
 
-for chunk in pd.read_csv(IRIIS_CSV, usecols=["Article", "Source"], chunksize=chunk_size):
-    total_raw += len(chunk)
-    chunk = chunk.rename(columns={"Article": "text"})
-    chunk["text"] = chunk["text"].astype(str)
-    chunk = chunk[chunk["text"].str.split().str.len() >= 5]
-    chunk = chunk[chunk["text"].apply(lambda t: bool(re.search(r'[\u0900-\u097F]', str(t))))]
-    chunk = chunk.drop_duplicates(subset=["text"])
-    chunk["source"]         = "iriisnepal"
-    chunk["domain"]         = "formal"
-    chunk["script"]         = "devanagari"
-    chunk["lang"]           = "ne"
-    chunk["date_collected"] = TODAY
-    chunk["license"]        = "MIT"
-    chunks.append(chunk[["text", "source", "domain", "script", "lang", "date_collected", "license"]])
-    total_kept += len(chunk)
-    print(f"  Processed {total_raw:,} rows so far, kept {total_kept:,}...")
+create_sql = f"""
+CREATE OR REPLACE TEMP TABLE corpus AS
+WITH youtube AS (
+    SELECT
+        text,
+        'youtube_comments' AS source,
+        'colloquial' AS domain,
+        script,
+        lang,
+        '{TODAY}' AS date_collected,
+        'CC BY 4.0' AS license
+    FROM read_csv_auto('{YOUTUBE_CSV}', header=true)
+    WHERE text IS NOT NULL AND trim(text) <> ''
+),
+wikipedia AS (
+    SELECT
+        text,
+        'wikipedia_nepali' AS source,
+        'encyclopedia' AS domain,
+        'devanagari' AS script,
+        'ne' AS lang,
+        '{TODAY}' AS date_collected,
+        'CC BY-SA 4.0' AS license
+    FROM read_csv_auto('{WIKI_CSV}', header=true)
+    WHERE text IS NOT NULL AND trim(text) <> ''
+),
+iriis AS (
+    SELECT
+        Article AS text,
+        'iriisnepal' AS source,
+        'formal' AS domain,
+        'devanagari' AS script,
+        'ne' AS lang,
+        '{TODAY}' AS date_collected,
+        'MIT' AS license
+    FROM read_csv_auto('{IRIIS_CSV}', header=true, ignore_errors=true)
+    WHERE Article IS NOT NULL
+      AND length(trim(Article)) > 0
+      AND length(split(trim(Article), ' ')) >= 5
+    AND regexp_matches(Article, '[ऀ-ॿ]')
+),
+news AS (
+    SELECT
+        text,
+        source,
+        'news' AS domain,
+        CASE
+            WHEN regexp_matches(text, '[ऀ-ॿ]') THEN 'devanagari'
+            WHEN regexp_matches(text, '[A-Za-z]') THEN 'latin'
+            ELSE 'other'
+        END AS script,
+        'ne' AS lang,
+        '{TODAY}' AS date_collected,
+        'source-dependent' AS license
+    FROM read_csv_auto('{NEWS_CSV}', header=true)
+    WHERE text IS NOT NULL AND trim(text) <> ''
+),
+combined AS (
+    SELECT * FROM youtube
+    UNION ALL SELECT * FROM wikipedia
+    UNION ALL SELECT * FROM iriis
+    UNION ALL SELECT * FROM news
+)
+SELECT * FROM combined
+"""
 
-print("\nConcatenating IRIISNEPAL chunks...")
-iriis = pd.concat(chunks, ignore_index=True)
-iriis = iriis.drop_duplicates(subset=["text"])
-print(f"  Final IRIISNEPAL rows: {len(iriis):,}")
+print("Materializing unified corpus...")
+con.execute(create_sql)
 
-# ─────────────────────────────────────────
-# MERGE ALL THREE
-# ─────────────────────────────────────────
-print("\nMerging all sources...")
-combined = pd.concat([yt, wiki, iriis], ignore_index=True)
-print(f"  Combined before dedup: {len(combined):,}")
-combined = combined.drop_duplicates(subset=["text"])
-print(f"  After deduplication:   {len(combined):,}")
 
-# ─────────────────────────────────────────
-# SAVE OUTPUTS
-# ─────────────────────────────────────────
-print("\nSaving outputs...")
-
-def save(df, name):
-    path = os.path.join(OUT_DIR, f"{name}.parquet")
-    df.to_parquet(path, index=False)
+def copy(query: str, path: str) -> None:
+    if os.path.exists(path):
+        os.remove(path)
+    con.execute(f"COPY ({query}) TO '{path}' (FORMAT PARQUET, COMPRESSION ZSTD)")
     size_mb = os.path.getsize(path) / (1024 * 1024)
-    print(f"  {name:<50} {len(df):>10,} rows  {size_mb:>7.1f} MB")
+    count = con.execute(f"SELECT count(*) FROM ({query})").fetchone()[0]
+    print(f"  {os.path.basename(path):<32} {count:>12,} rows  {size_mb:>8.1f} MB")
 
-save(combined,                                          "nepali_corpus_full")
-save(combined[combined["domain"] == "colloquial"],      "nepali_corpus_colloquial")
-save(combined[combined["domain"] == "formal"],          "nepali_corpus_formal")
-save(combined[combined["domain"] == "encyclopedia"],    "nepali_corpus_wikipedia")
-save(combined[combined["script"] == "latin"],           "nepali_corpus_roman")
-save(combined[combined["script"] == "mixed"],           "nepali_corpus_codemixed")
 
-# ─────────────────────────────────────────
-# FINAL STATS
-# ─────────────────────────────────────────
-print("\n" + "="*60)
-print(f"Total rows: {len(combined):,}")
-print("\nBy domain:")
-print(combined["domain"].value_counts().to_string())
-print("\nBy script:")
-print(combined["script"].value_counts().to_string())
-print("\nBy source:")
-print(combined["source"].value_counts().to_string())
-print("\nBy license:")
-print(combined["license"].value_counts().to_string())
-print("="*60)
-print("\nDone. Next: python scripts/publish.py")
+print("Writing parquet outputs...")
+copy("SELECT * FROM corpus", FULL_PATH)
+copy("SELECT * FROM corpus WHERE domain = 'colloquial'", COLLOQUIAL_PATH)
+copy("SELECT * FROM corpus WHERE domain = 'formal'", FORMAL_PATH)
+copy("SELECT * FROM corpus WHERE domain = 'encyclopedia'", WIKI_PATH)
+copy("SELECT * FROM corpus WHERE script = 'latin'", ROMAN_PATH)
+copy("SELECT * FROM corpus WHERE script = 'mixed'", CODEMIXED_PATH)
+
+print("\nFinal corpus stats")
+stats = con.execute(
+    """
+    SELECT
+        count(*) AS total_rows,
+        sum(CASE WHEN domain = 'colloquial' THEN 1 ELSE 0 END) AS colloquial_rows,
+        sum(CASE WHEN domain = 'formal' THEN 1 ELSE 0 END) AS formal_rows,
+        sum(CASE WHEN domain = 'news' THEN 1 ELSE 0 END) AS news_rows,
+        sum(CASE WHEN domain = 'encyclopedia' THEN 1 ELSE 0 END) AS wiki_rows
+    FROM corpus
+    """
+).fetchone()
+print(f"  Total rows:      {stats[0]:,}")
+print(f"  Colloquial rows: {stats[1]:,}")
+print(f"  Formal rows:     {stats[2]:,}")
+print(f"  News rows:       {stats[3]:,}")
+print(f"  Wiki rows:       {stats[4]:,}")
+
+print("\nBy source")
+print(con.execute("SELECT source, count(*) AS n FROM corpus GROUP BY source ORDER BY n DESC").df().to_string(index=False))
+
+print("\nBy script")
+print(con.execute("SELECT script, count(*) AS n FROM corpus GROUP BY script ORDER BY n DESC").df().to_string(index=False))
+
+print("\nDone. Next: build the dataset card and publish to Hugging Face.")

@@ -2,10 +2,7 @@ import pandas as pd
 import re
 from langdetect import detect, LangDetectException
 
-# ─────────────────────────────────────────
-# NEPALI WORD LIST (Roman script detection)
-# If a latin row contains at least 1 of these → it's Roman Nepali → KEEP
-# ─────────────────────────────────────────
+# Nepali word list used to keep Roman Nepali rows.
 NEPALI_WORDS = {
     # Common verbs
     "cha", "chha", "xa", "xaina", "bhayo", "gayo", "aayo", "garyo",
@@ -50,9 +47,7 @@ NEPALI_WORDS = {
     "terai", "pahad", "himal",
 }
 
-# ─────────────────────────────────────────
-# SPAM PATTERNS to remove
-# ─────────────────────────────────────────
+# Spam patterns to remove.
 SPAM_PATTERNS = [
     r'subscribe.*channel',
     r'check.*my.*channel',
@@ -74,9 +69,7 @@ SPAM_PATTERNS = [
 ]
 SPAM_RE = re.compile('|'.join(SPAM_PATTERNS), re.IGNORECASE)
 
-# ─────────────────────────────────────────
-# HELPER FUNCTIONS
-# ─────────────────────────────────────────
+# Helper functions
 
 DEVANAGARI_RANGE = re.compile(r'[\u0900-\u097F]')
 EMOJI_RE = re.compile(
@@ -134,9 +127,7 @@ def detect_lang(text):
     except LangDetectException:
         return "unknown"
 
-# ─────────────────────────────────────────
-# MAIN PIPELINE
-# ─────────────────────────────────────────
+# Main cleaning pipeline
 
 df = pd.read_csv("data/youtube_comments.csv")
 print(f"Loaded: {len(df)} rows")
@@ -177,34 +168,33 @@ roman_nepali_mask = df["text"].apply(is_roman_nepali)
 df = df[~latin_mask | roman_nepali_mask]
 print(f"After Roman Nepali filter: {len(df)} rows")
 
-# 10. For DEVANAGARI + MIXED rows: use langdetect to filter Hindi etc.
+# 10. For DEVANAGARI + MIXED rows: keep only Nepali-language content.
 print("\nDetecting languages for devanagari/mixed rows...")
 non_latin_mask = df["script"] != "latin"
 df.loc[non_latin_mask, "lang"] = df.loc[non_latin_mask, "text"].apply(detect_lang)
 df["lang"] = df["lang"].fillna("ne-roman")  # latin rows default to ne-roman
 
-REMOVE_LANGS = {"hi", "en", "bn", "ko", "ar", "id", "ja", "zh-cn", "zh-tw", "th", "vi", "ur", "pa"}
-df = df[~df["lang"].isin(REMOVE_LANGS)]
+# Keep Roman Nepali on latin rows and Nepali on Devanagari/mixed rows.
+latin_keep_mask = df["script"] == "latin"
+non_latin_keep_mask = non_latin_mask & (df["lang"] == "ne")
+df = df[latin_keep_mask | non_latin_keep_mask]
 print(f"After language filter: {len(df)} rows")
 
-# ─────────────────────────────────────────
-# FINAL STATS
-# ─────────────────────────────────────────
-print(f"\n✅ Final clean dataset: {len(df)} rows")
+print(f"\nFinal clean dataset: {len(df)} rows")
 print("\nScript distribution:")
 print(df["script"].value_counts())
 print("\nLanguage distribution:")
 print(df["lang"].value_counts().head(10))
 
-print("\n--- Sample Devanagari ---")
+print("\nSample Devanagari:")
 print(df[df["script"] == "devanagari"]["text"].sample(5).to_string())
 
-print("\n--- Sample Mixed ---")
+print("\nSample Mixed:")
 print(df[df["script"] == "mixed"]["text"].sample(5).to_string())
 
-print("\n--- Sample Roman Nepali ---")
+print("\nSample Roman Nepali:")
 print(df[df["script"] == "latin"]["text"].sample(5).to_string())
 
 # Save
 df.to_csv("data/youtube_comments_clean.csv", index=False, encoding="utf-8")
-print("\n💾 Saved to data/youtube_comments_clean.csv")
+print("\nSaved to data/youtube_comments_clean.csv")

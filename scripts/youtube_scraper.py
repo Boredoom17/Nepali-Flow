@@ -6,9 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ─────────────────────────────────────────
-# CONFIG — add as many keys as you have
-# ─────────────────────────────────────────
+# Configuration
 API_KEYS = [
     os.getenv("YOUTUBE_API_KEY"),
     os.getenv("YOUTUBE_API_KEY2"),
@@ -20,13 +18,13 @@ API_KEYS = [
 API_KEYS = [k for k in API_KEYS if k]  # remove empty ones
 
 SEARCH_QUERIES = [
-    # --- GENERAL NEPAL ---
+    # General Nepal
     "नेपाल",
     "नेपाली",
     "nepal vlog nepali",
     "nepal daily life",
 
-    # --- REGIONAL / GEOGRAPHIC DIVERSITY ---
+    # Regional and geographic diversity
     "kathmandu vlog nepali",
     "pokhara vlog nepali",
     "butwal vlog nepali",
@@ -51,7 +49,7 @@ SEARCH_QUERIES = [
     "पहाड नेपाल",
     "तराई नेपाल",
 
-    # --- STREET INTERVIEWS ---
+    # Street interviews
     "nepali street interview",
     "नेपाली अन्तर्वार्ता",
     "सडक अन्तर्वार्ता नेपाल",
@@ -59,7 +57,7 @@ SEARCH_QUERIES = [
     "nepal random interview",
     "nepal public opinion nepali",
 
-    # --- NEWS & CURRENT AFFAIRS ---
+    # News and current affairs
     "नेपाल समाचार",
     "nepali news today",
     "nepal news nepali",
@@ -68,7 +66,7 @@ SEARCH_QUERIES = [
     "nepal election nepali",
     "nepal government nepali",
 
-    # --- COMEDY & ENTERTAINMENT ---
+    # Comedy and entertainment
     "nepali comedy",
     "nepali roast",
     "nepali prank",
@@ -79,7 +77,7 @@ SEARCH_QUERIES = [
     "nepali funny video",
     "nepali skit",
 
-    # --- MUSIC ---
+    # Music
     "नेपाली गीत",
     "nepali song new",
     "nepali lok dohori",
@@ -90,7 +88,7 @@ SEARCH_QUERIES = [
     "nepali movie song",
     "nepali bhajan",
 
-    # --- LIFESTYLE & FOOD ---
+    # Lifestyle and food
     "nepali food vlog",
     "नेपाली खाना",
     "nepali recipe nepali",
@@ -99,7 +97,7 @@ SEARCH_QUERIES = [
     "nepali kitchen",
     "नेपाली जीवनशैली",
 
-    # --- TRAVEL & TOURISM ---
+    # Travel and tourism
     "nepal travel nepali",
     "nepal hiking nepali",
     "nepal trekking vlog nepali",
@@ -109,7 +107,7 @@ SEARCH_QUERIES = [
     "nepal road trip nepali",
     "nepal travel guide nepali",
 
-    # --- EDUCATION & TECH ---
+    # Education and tech
     "nepali tutorial nepali",
     "nepal tech nepali",
     "nepali education video",
@@ -117,14 +115,14 @@ SEARCH_QUERIES = [
     "nepali coding tutorial",
     "nepal study vlog",
 
-    # --- AGRICULTURE & RURAL LIFE ---
+    # Agriculture and rural life
     "नेपाली किसान",
     "nepal farming nepali",
     "नेपाली कृषि",
     "nepal village life nepali",
     "गाउँको जीवन नेपाल",
 
-    # --- CULTURE & FESTIVALS ---
+    # Culture and festivals
     "dashain nepal nepali",
     "tihar nepal nepali",
     "नेपाली चाडपर्व",
@@ -133,13 +131,13 @@ SEARCH_QUERIES = [
     "teej nepal nepali",
     "chhath nepal nepali",
 
-    # --- SPORTS ---
+    # Sports
     "nepal football nepali",
     "nepal cricket nepali",
     "नेपाल क्रिकेट",
     "nepal sports nepali",
 
-    # --- DIASPORA ---
+    # Diaspora
     "nepali in japan vlog",
     "nepali in korea vlog",
     "nepali in australia vlog",
@@ -149,16 +147,12 @@ SEARCH_QUERIES = [
     "विदेशमा नेपाली",
 ]
 
-# ─────────────────────────────────────────
-# PATHS
-# ─────────────────────────────────────────
+# Paths
 OUTPUT_CSV = "data/youtube_comments.csv"
 SEEN_VIDEOS_FILE = "data/seen_videos.txt"
 SEEN_TEXTS_FILE = "data/seen_texts.txt"
 
-# ─────────────────────────────────────────
-# LOAD EXISTING STATE
-# ─────────────────────────────────────────
+# Load existing state
 def load_seen_videos():
     if os.path.exists(SEEN_VIDEOS_FILE):
         with open(SEEN_VIDEOS_FILE, "r") as f:
@@ -192,9 +186,7 @@ def append_comments(comments):
             writer.writeheader()
         writer.writerows(comments)
 
-# ─────────────────────────────────────────
-# API WITH AUTO KEY ROTATION
-# ─────────────────────────────────────────
+# API helpers with key rotation
 current_key_index = 0
 
 def get_youtube():
@@ -205,14 +197,12 @@ def rotate_key():
     global current_key_index
     current_key_index += 1
     if current_key_index >= len(API_KEYS):
-        print("\n❌ All API keys exhausted. Run again tomorrow.")
+        print("\nAll API keys are exhausted. Run again tomorrow.")
         return False
-    print(f"\n🔄 Switching to API key {current_key_index + 1}...")
+    print(f"\nSwitching to API key {current_key_index + 1}...")
     return True
 
-# ─────────────────────────────────────────
-# SCRAPER FUNCTIONS
-# ─────────────────────────────────────────
+# Scraper functions
 def search_videos(query, max_results=50):
     while True:
         try:
@@ -264,17 +254,15 @@ def get_comments(video_id):
                 print(f"  Skipping {video_id}: {e}")
                 return comments
 
-# ─────────────────────────────────────────
-# MAIN
-# ─────────────────────────────────────────
+# Main entry point
 def main():
-    print(f"🔑 Loaded {len(API_KEYS)} API key(s)")
+    print(f"Loaded {len(API_KEYS)} API key(s)")
 
     seen_videos = load_seen_videos()
     seen_texts = load_seen_texts()
 
-    print(f"📹 Already processed: {len(seen_videos)} videos")
-    print(f"💬 Already collected: {len(seen_texts)} comments")
+    print(f"Already processed: {len(seen_videos)} videos")
+    print(f"Already collected: {len(seen_texts)} comments")
 
     total_new = 0
 
@@ -304,8 +292,8 @@ def main():
             print(f"+{len(new_comments)} new (total new this run: {total_new})")
             time.sleep(0.5)
 
-    print(f"\n✅ Done! Added {total_new} new comments this run.")
-    print(f"📁 Total in CSV: {len(seen_texts)} comments")
+    print(f"\nDone. Added {total_new} new comments in this run.")
+    print(f"Total in CSV: {len(seen_texts)} comments")
 
 if __name__ == "__main__":
     main()
