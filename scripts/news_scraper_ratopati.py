@@ -83,6 +83,7 @@ def extract_text(html):
     for tag in soup.find_all(["script", "style", "nav", "header", "footer", "aside"]):
         tag.decompose()
 
+    # Try the usual Ratopati article containers first.
     selectors = [
         ("div", "dn__news--wrap"),
         ("div", "content-flex"),
@@ -98,6 +99,7 @@ def extract_text(html):
         if len(text) > 120 and has_nepali(text):
             return text
 
+    # If layout changed, use full body as a fallback.
     body = soup.find("body")
     if body:
         text = clean_text(body.get_text(separator=" "))
@@ -127,6 +129,7 @@ def get_existing_ratopati_stats():
 
 
 def scrape_ratopati(need_to_add):
+	# Resume from old seen URLs and whatever is already in the CSV.
     seen_urls = load_seen_urls()
     _, existing_urls = get_existing_ratopati_stats()
     seen_urls.update(existing_urls)
@@ -143,6 +146,7 @@ def scrape_ratopati(need_to_add):
         category_added = 0
         print(f"\n[{SOURCE}/{category}]", end=" ", flush=True)
 
+		# Go page by page inside this category.
         for page_num in range(1, 501):
             if added >= need_to_add:
                 break
@@ -155,6 +159,7 @@ def scrape_ratopati(need_to_add):
             soup = BeautifulSoup(html, "lxml")
             links = []
 
+			# Grab story links from the listing page.
             for a in soup.find_all("a", href=True):
                 href = a["href"]
                 if re.search(r"/story/\d+", href):
@@ -165,6 +170,7 @@ def scrape_ratopati(need_to_add):
             if not links:
                 break
 
+			# Remove duplicates on the same page before fetching articles.
             local_seen = set()
             for article_url in links:
                 if article_url in local_seen:
@@ -182,6 +188,7 @@ def scrape_ratopati(need_to_add):
                 if not text:
                     continue
 
+				# Save only if main text extraction worked.
                 append_article(
                     {
                         "text": text,

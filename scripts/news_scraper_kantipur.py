@@ -18,16 +18,19 @@ HEADERS = {
 
 # Utility helpers
 def load_seen_urls():
+    # Load previous URLs so reruns continue instead of starting from zero.
     if os.path.exists(SEEN_URLS_FILE):
         with open(SEEN_URLS_FILE, "r") as f:
             return set(line.strip() for line in f if line.strip())
     return set()
 
 def save_seen_url(url):
+    # Save each seen URL immediately so progress is not lost.
     with open(SEEN_URLS_FILE, "a") as f:
         f.write(url + "\n")
 
 def append_article(row):
+    # Append mode keeps adding new rows to the same corpus file.
     file_exists = os.path.exists(OUTPUT_CSV)
     with open(OUTPUT_CSV, "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
@@ -40,6 +43,7 @@ def append_article(row):
         writer.writerow(row)
 
 def fetch(url, timeout=15):
+    # Return None on errors so crawler can skip and keep moving.
     try:
         r = requests.get(url, headers=HEADERS, timeout=timeout)
         r.raise_for_status()
@@ -55,6 +59,7 @@ def clean_text(text):
     return re.sub(r'\s+', ' ', text).strip()
 
 def extract_text(html, selectors):
+    # Remove noisy layout tags before extracting readable body text.
     soup = BeautifulSoup(html, "lxml")
     for tag in soup.find_all(["script", "style", "nav", "header", "footer", "aside"]):
         tag.decompose()
@@ -68,6 +73,7 @@ def extract_text(html, selectors):
     return None
 
 def scrape_and_save(article_url, source, selectors, seen_urls):
+    # Skip already seen links, then fetch and save if text extraction works.
     if article_url in seen_urls:
         return False
     seen_urls.add(article_url)
@@ -96,6 +102,7 @@ KANTIPUR_SELECTORS = ["div.news-inner-wrapper", "div.description", "article"]
 DAYS_BACK = 365 * 3  # 3 years
 
 def get_kantipur_links_from_page(html):
+    # Keep only article links that match Kantipur's dated URL pattern.
     soup = BeautifulSoup(html, "lxml")
     links = set()
     for a in soup.find_all("a", href=True):
@@ -126,6 +133,7 @@ def scrape_kantipur(seen_urls):
             d = date.today() - timedelta(days=days_ago)
             html = fetch(f"https://ekantipur.com/{cat}/{d.year}/{d.month:02d}/{d.day:02d}/")
             if not html:
+                # Stop date walk after many empty days in a row.
                 consecutive_empty_days += 1
                 if consecutive_empty_days >= 10:
                     break
@@ -151,6 +159,8 @@ def scrape_kantipur(seen_urls):
 # Main entry point
 def main():
     os.makedirs("data", exist_ok=True)
+
+    # Keep this script resumable by loading previous seen URLs.
     seen_urls = load_seen_urls()
     print(f"[kantipur] Already seen: {len(seen_urls)} URLs")
 

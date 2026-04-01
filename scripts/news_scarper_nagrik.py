@@ -123,19 +123,18 @@ def extract_embedded_article_url(url):
 	"""Extract article URL from social share links (Facebook u= or Twitter text= parameters)."""
 	try:
 		parsed = urlparse(url)
-		# Facebook share links: u=https://...article.html
+		# Some pages expose article URLs only through share links.
 		if "facebook.com/sharer" in url:
 			params = parse_qs(parsed.query)
 			if "u" in params:
 				embedded = unquote(params["u"][0])
 				if embedded.startswith("http"):
 					return embedded
-		# Twitter share links: text=Visit https://...article.html
 		if "twitter.com/intent/tweet" in url:
 			params = parse_qs(parsed.query)
 			if "text" in params:
 				text = unquote(params["text"][0])
-				# Extract URL from text like "Visit https://..."
+				# Pull the first URL from text like "Visit https://...".
 				import re as regex_module
 				match = regex_module.search(r'https?://[^\s]+', text)
 				if match:
@@ -184,7 +183,7 @@ def within_time_window(dt, years=YEARS_BACK):
 	if not dt:
 		return True
 
-	# Keep timezone handling consistent with parsed datePublished values.
+	# Keep timezone handling consistent with the parsed timestamp.
 	if dt.tzinfo is not None:
 		cutoff = datetime.now(dt.tzinfo) - timedelta(days=365 * years)
 	else:
@@ -234,7 +233,7 @@ def discover_links(html, base_url):
 
 		full = normalize_url(urljoin(base_url, href))
 		if not same_domain(full):
-			# Try to extract embedded article URL from social share links
+			# Try pulling real article URLs from share links.
 			embedded = extract_embedded_article_url(full)
 			if embedded and same_domain(embedded):
 				embedded = normalize_url(embedded)
@@ -247,13 +246,14 @@ def discover_links(html, base_url):
 		elif is_crawlable_page(full):
 			crawl_links.append(full)
 
-	# Keep insertion order while deduplicating.
+	# Keep order stable while removing duplicates.
 	article_links = list(dict.fromkeys(article_links))
 	crawl_links = list(dict.fromkeys(crawl_links))
 	return article_links, crawl_links
 
 
 def scrape_nagarik(need_to_add):
+	# Resume from old runs so we never restart from zero.
 	seen_articles = load_seen(SEEN_ARTICLE_FILE)
 	seen_pages = load_seen(SEEN_PAGE_FILE)
 	_, existing_urls = get_existing_source_stats()
@@ -270,6 +270,7 @@ def scrape_nagarik(need_to_add):
 	print("=" * 50)
 
 	while queue and added < need_to_add and pages_scanned < max_pages:
+		# Crawl pages breadth-first to discover new article links.
 		page_url = normalize_url(queue.popleft())
 		if page_url in seen_pages:
 			continue
@@ -286,7 +287,7 @@ def scrape_nagarik(need_to_add):
 		if article_links:
 			print(f"  Found {len(article_links)} article links on page", flush=True)
 
-		# Only add crawl links if queue isn't too large (prevents infinite crawling)
+		# Keep queue size under control to avoid infinite crawl growth.
 		if len(queue) < 500:
 			for u in crawl_links:
 				if u not in seen_pages:
@@ -334,7 +335,7 @@ def scrape_nagarik(need_to_add):
 			if added % 20 == 0 or added == need_to_add:
 				print(f"Saved {added}/{need_to_add} | pages scanned: {pages_scanned} | queue: {len(queue)}", flush=True)
 		
-		# Batch write seen URLs
+		# Save discovered URLs in one batch for less file I/O.
 		for url in batch_saves:
 			save_seen(SEEN_ARTICLE_FILE, url)
 		

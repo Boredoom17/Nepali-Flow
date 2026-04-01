@@ -26,6 +26,7 @@ seen = set()
 current_text = []
 in_text = False
 
+# Read the compressed XML line by line so memory stays stable.
 with bz2.open(DUMP_FILE, 'rt', encoding='utf-8') as f:
     for line in f:
         line = line.strip()
@@ -41,6 +42,7 @@ with bz2.open(DUMP_FILE, 'rt', encoding='utf-8') as f:
             full_text = re.sub(r'</text>', '', full_text)
             full_text = clean_text(full_text)
 
+			# Split into sentence-like chunks and keep useful Nepali rows.
             for sent in re.split(r'[।\n]', full_text):
                 sent = sent.strip()
                 if len(sent.split()) >= 5 and has_nepali(sent) and sent not in seen:
@@ -52,6 +54,7 @@ with bz2.open(DUMP_FILE, 'rt', encoding='utf-8') as f:
 
 print(f"\nTotal sentences: {len(sentences):,}")
 
+# Save one sentence per row for easier downstream processing.
 with open(OUTPUT_CSV, 'w', newline='', encoding='utf-8') as f:
     writer = csv.writer(f)
     writer.writerow(['text'])

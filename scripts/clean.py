@@ -5,6 +5,7 @@ from langdetect import detect, LangDetectException
 # Nepali word list used to keep Roman Nepali rows.
 NEPALI_WORDS = {
     # Common verbs
+    # Load raw comments as the starting point.
     "cha", "chha", "xa", "xaina", "bhayo", "gayo", "aayo", "garyo",
     "huncha", "hunchha", "hudaina", "bhanchan", "gardai", "gareko",
     "garcha", "lagyo", "lagcha", "bho", "thiyo", "thiye", "hunthyo",
@@ -31,7 +32,7 @@ NEPALI_WORDS = {
     # Particles / connectors
     "pani", "ni", "ta", "ra", "nai", "bhane", "bhaneko", "vane",
     "tara", "kinabhane", "tesaile", "tyasaile", "aafai", "afai",
-    # Greetings / expressions
+    # Tag each row by script so later filters are easier.
     "namaste", "namaskar", "dhanyabad", "shukriya", "maaf",
     "bistikai", "wah", "waw", "vah", "aba", "aaba", "asti",
     "hizosamma", "bholi", "parsi",
@@ -56,9 +57,10 @@ SPAM_PATTERNS = [
     r'please.*subscribe',
     r'sub.*back',
     r'follow.*me',
+    # Print quick sanity checks before saving.
     r'check.*my.*profile',
     r'promo',
-    r'discount',
+    # Final output used by the merge step.
     r'offer',
     r'click.*link',
     r'bit\.ly',

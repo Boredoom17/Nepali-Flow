@@ -9,6 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MERGED_DIR = os.path.join(BASE_DIR, "data", "merged")
 
 DATASETS = [
+	# Keep each release explicit so you can publish subsets independently.
     {
         "repo_id": "Boredoom17/nepali-text-corpus",
         "title": "Nepali Text Corpus",
@@ -55,10 +56,12 @@ DATASETS = [
 
 
 def row_count(path: str) -> int:
+	# Fast row count from parquet metadata (no full load needed).
     return pq.ParquetFile(path).metadata.num_rows
 
 
 def size_category(rows: int) -> str:
+	# Map row count to Hugging Face size bucket.
     if rows < 100_000:
         return "10K<n<100K"
     if rows < 1_000_000:
@@ -69,6 +72,7 @@ def size_category(rows: int) -> str:
 
 
 def build_readme(title: str, description: str, rows: int, path: str, license_note: str) -> str:
+	# Build a simple dataset card per repo.
     return dedent(
         f"""---
         pretty_name: {title}
@@ -81,8 +85,6 @@ def build_readme(title: str, description: str, rows: int, path: str, license_not
         - nepali
         - corpus
         - text
-        size_categories:
-        - 100K<n<1M
         license: other
         size_categories:
         - {size_category(rows)}
@@ -114,6 +116,7 @@ def build_readme(title: str, description: str, rows: int, path: str, license_not
 
 
 def main() -> None:
+	# Use HF_TOKEN from environment so credentials are not hardcoded.
     token = os.environ.get("HF_TOKEN")
     if not token:
         raise SystemExit("HF_TOKEN is not set. Export it before publishing.")
@@ -121,6 +124,7 @@ def main() -> None:
     api = HfApi(token=token)
 
     for dataset in DATASETS:
+		# Validate local file first, then upload data + README.
         path = dataset["path"]
         if not os.path.exists(path):
             raise SystemExit(f"Missing file: {path}")

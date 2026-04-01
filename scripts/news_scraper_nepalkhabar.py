@@ -121,12 +121,12 @@ def is_article_url(url):
 		return False
 	path = urlparse(url).path.lower()
 
-	# NepalKhabar articles typically end with numbers and dates or just have / separators
+	# Keep this loose because NepalKhabar URL patterns vary.
 	if any(bad in path for bad in ["/author/", "/tag/", "/search", "/category", "/about", "/contact"]):
 		return False
 	if path == "/" or path == "":
 		return False
-	# Must have some substance in URL path
+	# Ignore tiny paths that are usually not article pages.
 	if len(path) < 4:
 		return False
 	return True
@@ -222,6 +222,7 @@ def discover_links(html, base_url):
 
 
 def scrape_nepalkhabar(need_to_add):
+	# Resume from previous crawl state.
 	seen_articles = load_seen(SEEN_ARTICLE_FILE)
 	seen_pages = load_seen(SEEN_PAGE_FILE)
 	_, existing_urls = get_existing_source_stats()
@@ -238,6 +239,7 @@ def scrape_nepalkhabar(need_to_add):
 	print("=" * 50)
 
 	while queue and added < need_to_add and pages_scanned < max_pages:
+		# Breadth-first crawl from seed pages to discover article links.
 		page_url = normalize_url(queue.popleft())
 		if page_url in seen_pages:
 			continue
@@ -254,6 +256,7 @@ def scrape_nepalkhabar(need_to_add):
 		if article_links:
 			print(f"  Found {len(article_links)} article links on page", flush=True)
 
+		# Grow the queue gradually so we do not explode memory.
 		if len(queue) < 500:
 			for u in crawl_links:
 				if u not in seen_pages:
@@ -261,6 +264,7 @@ def scrape_nepalkhabar(need_to_add):
 
 		batch_saves = []
 		for article_url in article_links:
+			# Skip links that are already processed.
 			if added >= need_to_add:
 				break
 			if article_url in seen_articles:
@@ -271,12 +275,14 @@ def scrape_nepalkhabar(need_to_add):
 				continue
 
 			published_dt = extract_published_date(article_html)
+			# Keep only articles inside the chosen time window.
 			if not within_time_window(published_dt, YEARS_BACK):
 				seen_articles.add(article_url)
 				batch_saves.append(article_url)
 				continue
 
 			text = extract_text(article_html)
+			# If we could not extract a useful body, mark and move on.
 			if not text:
 				seen_articles.add(article_url)
 				batch_saves.append(article_url)

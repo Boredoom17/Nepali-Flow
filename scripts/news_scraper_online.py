@@ -71,7 +71,7 @@ def extract_text(html):
 	for tag in soup.find_all(["script", "style", "nav", "header", "footer", "aside"]):
 		tag.decompose()
 
-	# Try specific content selectors (old and new versions)
+	# Try the usual content containers first.
 	selectors = [
 		("div", "ok18-single-post-content-wrap"),
 		("div", "ok-news-post"),
@@ -94,13 +94,13 @@ def extract_text(html):
 			if len(text) > 100 and has_nepali(text):
 				return text
 
-	# Fallback: try all divs with article-like classes
+	# If the page layout changed, try generic article-like class names.
 	for div in soup.find_all("div", class_=re.compile(r"(content|article|post|entry|story|news).*", re.I)):
 		text = clean_text(div.get_text(separator=" "))
 		if len(text) > 120 and has_nepali(text):
 			return text
 
-	# Last resort: get body text
+	# Last fallback is the whole body text.
 	body = soup.find("body")
 	if body:
 		text = clean_text(body.get_text(separator=" "))
@@ -130,6 +130,7 @@ def get_existing_onlinekhabar_stats():
 
 
 def scrape_onlinekhabar(need_to_add):
+	# Resume mode: start from previously saved URLs and existing CSV rows.
 	seen_urls = load_seen_urls()
 	_, existing_urls = get_existing_onlinekhabar_stats()
 	seen_urls.update(existing_urls)
@@ -153,12 +154,12 @@ def scrape_onlinekhabar(need_to_add):
 		cat_added = 0
 		empty_pages = 0
 
-		# Paginate within each category
+		# Walk each category page-by-page.
 		for page_num in range(1, 201):  # Try up to 200 pages per category
 			if added >= need_to_add:
 				break
 
-			# Break if too many consecutive empty pages
+			# Stop this category if we keep seeing no new results.
 			if empty_pages >= 3:
 				break
 
@@ -170,7 +171,7 @@ def scrape_onlinekhabar(need_to_add):
 			soup = BeautifulSoup(html, "lxml")
 			raw_links = []
 
-			# Extract all article links from the page
+			# Collect article links with the date/id URL pattern.
 			for a in soup.find_all("a", href=True):
 				href = a["href"]
 				# Match OnlineKhabar article URL pattern
@@ -178,7 +179,7 @@ def scrape_onlinekhabar(need_to_add):
 					full = href if href.startswith("http") else "https://www.onlinekhabar.com" + href
 					raw_links.append(full)
 
-			# Deduplicate
+			# Remove duplicates from the page and skip URLs we already saved.
 			links = []
 			local_seen = set()
 			for u in raw_links:
@@ -186,11 +187,11 @@ def scrape_onlinekhabar(need_to_add):
 					local_seen.add(u)
 					links.append(u)
 
-			# If no raw links at all, we've hit the end of this category
+			# No raw links usually means pagination ended.
 			if not raw_links:
 				break
 
-			# If all links are seen, continue pagination
+			# All links were already seen, so try the next page.
 			if not links:
 				empty_pages += 1
 				continue
@@ -226,7 +227,7 @@ def scrape_onlinekhabar(need_to_add):
 				if added % 20 == 0 or added == need_to_add:
 					print(f"\nSaved {added}/{need_to_add}", end=" ", flush=True)
 
-			# Track if this page added anything
+			# Keep track of stale pages so we can stop early.
 			if added == page_added_before:
 				empty_pages += 1
 			else:

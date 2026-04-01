@@ -154,13 +154,14 @@ SEEN_TEXTS_FILE = "data/seen_texts.txt"
 
 # Load existing state
 def load_seen_videos():
+	# Read previously processed video IDs so reruns can continue safely.
     if os.path.exists(SEEN_VIDEOS_FILE):
         with open(SEEN_VIDEOS_FILE, "r") as f:
             return set(line.strip() for line in f if line.strip())
     return set()
 
 def load_seen_texts():
-    """Load existing comment texts to avoid duplicates across runs."""
+	# Keep a set of old comments so we only append new rows.
     seen = set()
     if os.path.exists(OUTPUT_CSV):
         with open(OUTPUT_CSV, "r", encoding="utf-8") as f:
@@ -170,10 +171,12 @@ def load_seen_texts():
     return seen
 
 def save_seen_video(video_id):
+	# Save each processed video immediately for resume support.
     with open(SEEN_VIDEOS_FILE, "a") as f:
         f.write(video_id + "\n")
 
 def append_comments(comments):
+	# Append mode keeps old data and adds only the latest batch.
     file_exists = os.path.exists(OUTPUT_CSV)
     with open(OUTPUT_CSV, "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
@@ -190,10 +193,12 @@ def append_comments(comments):
 current_key_index = 0
 
 def get_youtube():
+	# Build a client using the currently active API key.
     global current_key_index
     return build("youtube", "v3", developerKey=API_KEYS[current_key_index])
 
 def rotate_key():
+	# When quota is exhausted, move to the next key.
     global current_key_index
     current_key_index += 1
     if current_key_index >= len(API_KEYS):
@@ -204,6 +209,7 @@ def rotate_key():
 
 # Scraper functions
 def search_videos(query, max_results=50):
+	# Search videos for one query and return video IDs only.
     while True:
         try:
             youtube = get_youtube()
@@ -225,6 +231,7 @@ def search_videos(query, max_results=50):
                 return []
 
 def get_comments(video_id):
+	# Pull all top-level comments for one video via pagination.
     comments = []
     while True:
         try:
@@ -256,6 +263,7 @@ def get_comments(video_id):
 
 # Main entry point
 def main():
+	# Load resume state from previous runs.
     print(f"Loaded {len(API_KEYS)} API key(s)")
 
     seen_videos = load_seen_videos()
@@ -266,6 +274,7 @@ def main():
 
     total_new = 0
 
+	# Run each query and collect comments from new videos.
     for query in SEARCH_QUERIES:
         print(f"\nSearching: '{query}'")
         video_ids = search_videos(query, max_results=50)
@@ -276,6 +285,7 @@ def main():
             print(f"  Fetching: {vid_id}...", end=" ")
             comments = get_comments(vid_id)
 
+			# Keep only comments that are not already in the CSV.
             new_comments = []
             for c in comments:
                 if c["text"] not in seen_texts:

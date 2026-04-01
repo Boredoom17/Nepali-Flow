@@ -21,6 +21,7 @@ ROMAN_PATH = os.path.join(OUT_DIR, "nepali_corpus_roman.parquet")
 CODEMIXED_PATH = os.path.join(OUT_DIR, "nepali_corpus_codemixed.parquet")
 
 con = duckdb.connect()
+# These settings keep memory usage manageable on large files.
 con.execute("PRAGMA threads = 2")
 con.execute("PRAGMA preserve_insertion_order = false")
 con.execute("PRAGMA memory_limit = '8GB'")
@@ -35,6 +36,7 @@ print("  News:         {0}".format(NEWS_CSV))
 create_sql = f"""
 CREATE OR REPLACE TEMP TABLE corpus AS
 WITH youtube AS (
+	-- YouTube is already cleaned and tagged in clean.py.
     SELECT
         text,
         'youtube_comments' AS source,
@@ -47,6 +49,7 @@ WITH youtube AS (
     WHERE text IS NOT NULL AND trim(text) <> ''
 ),
 wikipedia AS (
+	-- Wikipedia gets fixed metadata because it is one source.
     SELECT
         text,
         'wikipedia_nepali' AS source,
@@ -59,6 +62,7 @@ wikipedia AS (
     WHERE text IS NOT NULL AND trim(text) <> ''
 ),
 iriis AS (
+	-- IRIIS is huge, so we stream it with read_csv_auto.
     SELECT
         Article AS text,
         'iriisnepal' AS source,
@@ -74,6 +78,7 @@ iriis AS (
     AND regexp_matches(Article, '[ऀ-ॿ]')
 ),
 news AS (
+	-- News rows come from the local scraper CSV.
     SELECT
         text,
         source,
@@ -103,6 +108,7 @@ con.execute(create_sql)
 
 
 def copy(query: str, path: str) -> None:
+	# Recreate output file so old parquet files do not linger.
     if os.path.exists(path):
         os.remove(path)
     con.execute(f"COPY ({query}) TO '{path}' (FORMAT PARQUET, COMPRESSION ZSTD)")
@@ -112,6 +118,7 @@ def copy(query: str, path: str) -> None:
 
 
 print("Writing parquet outputs...")
+# One full file + focused subsets for easier Hugging Face publishing.
 copy("SELECT * FROM corpus", FULL_PATH)
 copy("SELECT * FROM corpus WHERE domain = 'colloquial'", COLLOQUIAL_PATH)
 copy("SELECT * FROM corpus WHERE domain = 'formal'", FORMAL_PATH)

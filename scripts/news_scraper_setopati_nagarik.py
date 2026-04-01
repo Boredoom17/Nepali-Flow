@@ -63,12 +63,14 @@ def extract_text(html):
     for tag in soup.find_all(["script", "style", "nav", "header", "footer"]):
         tag.decompose()
     
+    # First try the content-editor section used on many Setopati pages.
     section = soup.find("section", class_="content-editor")
     if section:
         text = clean_text(section.get_text(separator=" "))
         if len(text) > 100 and has_nepali(text):
             return text
     
+    # Then try a few common article containers.
     selectors = [("div", "news-content"), ("article", None), ("div", "content"), ("div", "article-body")]
     for tag_name, class_name in selectors:
         elem = soup.find(tag_name, class_=class_name) if class_name else soup.find(tag_name)
@@ -77,7 +79,7 @@ def extract_text(html):
             if len(text) > 100 and has_nepali(text):
                 return text
     
-    # Fallback to body text when section selectors fail.
+    # If everything else fails, use body text as a fallback.
     body = soup.find("body")
     if body:
         text = clean_text(body.get_text(separator=" "))
@@ -86,12 +88,14 @@ def extract_text(html):
     
     return None
 def scrape_and_save(page, url, seen_urls):
+    # Skip URLs we already processed in previous runs.
     if url in seen_urls:
         return False
     seen_urls.add(url)
     save_seen_url(url)
     
     try:
+        # Playwright is used here because Setopati pages can be dynamic.
         page.goto(url, wait_until='domcontentloaded', timeout=8000)
         html = page.content()
     except:
@@ -110,6 +114,7 @@ def scrape_and_save(page, url, seen_urls):
     return False
 
 def crawl():
+    # This scraper is resumable because we keep seen URLs in a text file.
     os.makedirs("data", exist_ok=True)
     seen_urls = load_seen_urls()
     total = 0
@@ -122,6 +127,7 @@ def crawl():
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         
+        # Loop categories first, then paginate each category.
         for cat in SETOPATI_CATEGORIES:
             if total >= TARGET:
                 break
@@ -154,6 +160,7 @@ def crawl():
 
                 if not links:
                     no_links_count += 1
+                    # Stop this category after several empty pages in a row.
                     if no_links_count > 5:
                         print(f"| {cat_total} articles", flush=True)
                         break
