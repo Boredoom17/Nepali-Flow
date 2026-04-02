@@ -17,23 +17,29 @@
 
 ## What Is This?
 
-I collected Nepali text from different places—formal writing, Wikipedia, news articles, and YouTube comments—and merged them into one big dataset. The point is to give NLP researchers cleaner data than what's usually available for Nepali.
+I collected Nepali text from different places and shaped it into a small dataset suite, not just one giant file. The idea is to give NLP researchers a few clean choices depending on what kind of Nepali they want to work with.
 
-Here's what I have:
+Each dataset has a different job:
 
-- **Full corpus** — everything combined (7.1M rows)
-- **Formal corpus** — IRIISNEPAL + Wikipedia + news (6.3M rows)
-- **Colloquial corpus** — YouTube comments - how people actually talk (431k rows)
-- **Roman corpus** — transliterated Nepali in Latin letters (307k rows)
+| Dataset | What it is | Size |
+|---|---|---:|
+| **Nepali Flow** | Everything combined in one place | 7.1M rows |
+| **Nepali Flow: Formal** | News + IRIISNEPAL + Wikipedia, mostly polished text | 6.3M rows |
+| **Nepali Flow: Colloquial** | YouTube comments and casual online Nepali | 431k rows |
+| **Nepali Flow: Roman** | Nepali written in Latin letters | 307k rows |
+
+If someone only wants clean formal text, they can use the formal set. If they want messy real-world Nepali, they can use the colloquial or Roman set. If they want the whole mix, they can use the full corpus.
 
 All the raw data is in CSV format, and I merge it using DuckDB to create parquet files that are easy to load into your ML pipeline.
 
 ## Hugging Face Datasets
 
-- [Boredoom17/Nepali-Corpus](https://huggingface.co/datasets/Boredoom17/nepali-corpus)
-- [Boredoom17/Nepali-Flow-Formal](https://huggingface.co/datasets/Boredoom17/nepali-flow-formal)
-- [Boredoom17/Nepali-Flow-Colloquial](https://huggingface.co/datasets/Boredoom17/nepali-flow-colloquial)
-- [Boredoom17/Nepali-Flow-Roman](https://huggingface.co/datasets/Boredoom17/nepali-flow-roman)
+All four Hugging Face datasets are part of the same suite and each one is meant for a different use case:
+
+- [Boredoom17/Nepali-Flow](https://huggingface.co/datasets/Boredoom17/nepali-flow) - full mix of everything
+- [Boredoom17/Nepali-Flow-Formal](https://huggingface.co/datasets/Boredoom17/nepali-flow-formal) - polished text for formal NLP work
+- [Boredoom17/Nepali-Flow-Colloquial](https://huggingface.co/datasets/Boredoom17/nepali-flow-colloquial) - everyday Nepali and code-mixed text
+- [Boredoom17/Nepali-Flow-Roman](https://huggingface.co/datasets/Boredoom17/nepali-flow-roman) - Romanized Nepali
 
 ## Key Features
 
