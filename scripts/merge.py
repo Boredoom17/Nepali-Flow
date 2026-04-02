@@ -143,9 +143,9 @@ copy(
     WHERE domain = 'colloquial'
     ORDER BY
         CASE script
-            WHEN 'devanagari' THEN 0
+            WHEN 'mixed' THEN 0
             WHEN 'latin' THEN 1
-            WHEN 'mixed' THEN 2
+            WHEN 'devanagari' THEN 2
             ELSE 3
         END,
         CASE
