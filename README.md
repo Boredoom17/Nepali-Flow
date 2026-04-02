@@ -30,10 +30,10 @@ All the raw data is in CSV format, and I merge it using DuckDB to create parquet
 
 ## Hugging Face Datasets
 
-- [Boredoom17/nepali-flow](https://huggingface.co/datasets/Boredoom17/nepali-flow)
-- [Boredoom17/nepali-flow-formal](https://huggingface.co/datasets/Boredoom17/nepali-flow-formal)
-- [Boredoom17/nepali-flow-colloquial](https://huggingface.co/datasets/Boredoom17/nepali-flow-colloquial)
-- [Boredoom17/nepali-flow-roman](https://huggingface.co/datasets/Boredoom17/nepali-flow-roman)
+- [Boredoom17/Nepali-Corpus](https://huggingface.co/datasets/Boredoom17/nepali-corpus)
+- [Boredoom17/Nepali-Flow-Formal](https://huggingface.co/datasets/Boredoom17/nepali-flow-formal)
+- [Boredoom17/Nepali-Flow-Colloquial](https://huggingface.co/datasets/Boredoom17/nepali-flow-colloquial)
+- [Boredoom17/Nepali-Flow-Roman](https://huggingface.co/datasets/Boredoom17/nepali-flow-roman)
 
 ## Key Features
 
