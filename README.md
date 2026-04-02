@@ -167,8 +167,6 @@ https://huggingface.co/datasets/Boredoom17/nepali-flow
 }
 ```
 
-**Casual mention:** "We used Aadarsha Chhetri's Nepali Flow (2026)."
-
 ## Maintainer
 
 Aadarsha Chhetri  
