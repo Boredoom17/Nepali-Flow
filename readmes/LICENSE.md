@@ -26,17 +26,6 @@ You can use it, but if you build something with it, you have to release that und
 If it's for research: probably okay.  
 If it's for a commercial product: contact the news outlet first.
 
-## In Practice
-
-### For a research paper:
-```
-This work uses the Nepali Text Corpus [1], which combines IRIISNEPAL [2], 
-Wikipedia, YouTube, and news data.
-
-[1] Chhetri (2026)
-[2] Yadav et al. (2020)
-```
-
 ### For code:
 Check the `license` column in the parquet file. Filter to only MIT and CC BY 4.0 if you're unsure about commercial use.
 
