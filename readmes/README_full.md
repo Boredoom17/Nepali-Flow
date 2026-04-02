@@ -1,5 +1,5 @@
 ---
-pretty_name: Nepali Text Corpus
+pretty_name: Nepali Flow
 task_categories:
 - text-generation
 - text-classification
@@ -22,7 +22,7 @@ source_datasets:
 - original
 ---
 
-# Nepali Text Corpus (Full)
+# Nepali Flow (Full)
 
 ## What Is This?
 Everything combined—7.1 million rows of Nepali. News, Wikipedia, YouTube comments, all together. It's meant to be a solid foundation if you want to build NLP tools for Nepali.
@@ -90,17 +90,17 @@ The corpus is mixed-license. On Hugging Face, `other` means the dataset does not
 If people ask how to cite this:
 
 ```
-Aadarsha Chhetri. (2026). Nepali Text Corpus. Hugging Face Datasets.
-https://huggingface.co/datasets/Boredoom17/nepali-text-corpus
+Aadarsha Chhetri. (2026). Nepali Flow. Hugging Face Datasets.
+https://huggingface.co/datasets/Boredoom17/nepali-flow
 ```
 
 **BibTeX:**
 ```bibtex
 @dataset{aadarsha2026nepali_text_corpus,
   author = {Aadarsha Chhetri},
-  title = {Nepali Text Corpus},
+  title = {Nepali Flow},
   year = {2026},
-  url = {https://huggingface.co/datasets/Boredoom17/nepali-text-corpus}
+  url = {https://huggingface.co/datasets/Boredoom17/nepali-flow}
 }
 ```
 

@@ -1,5 +1,5 @@
 ---
-pretty_name: Nepali Formal Corpus
+pretty_name: Nepali Flow: Formal
 task_categories:
 - text-generation
 - text-classification
@@ -18,7 +18,7 @@ size_categories:
 - 1M<n<10M
 ---
 
-# Nepali Formal Corpus
+# Nepali Flow: Formal
 
 ## What's This?
 This dataset has formal Nepali writing—the kind you'd find in news articles, encyclopedias, and research papers. Good for training language models on clear, well-written Nepali.
@@ -69,15 +69,15 @@ Mixed-source formal aggregate:
 ## How to Cite
 If you use this in research, cite it like:
 ```
-Aadarsha Chhetri. (2026). Nepali Formal Corpus. https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus
+Aadarsha Chhetri. (2026). Nepali Flow: Formal. https://huggingface.co/datasets/Boredoom17/nepali-flow-formal
 ```
 
 Or in BibTeX:
 ```bibtex
 @dataset{aadarsha2026formal,
   author = {Aadarsha Chhetri},
-  title = {Nepali Formal Corpus},
+  title = {Nepali Flow: Formal},
   year = {2026},
-  url = {https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus}
+  url = {https://huggingface.co/datasets/Boredoom17/nepali-flow-formal}
 }
 ```

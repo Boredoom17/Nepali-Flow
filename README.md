@@ -1,6 +1,6 @@
 <div align="center">
 
-# Nepali Text Corpus
+# Nepali Flow
 ### Large-Scale Nepali Dataset Suite for NLP Research
 
 [![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -30,10 +30,10 @@ All the raw data is in CSV format, and I merge it using DuckDB to create parquet
 
 ## Hugging Face Datasets
 
-- [Boredoom17/nepali-text-corpus](https://huggingface.co/datasets/Boredoom17/nepali-text-corpus)
-- [Boredoom17/nepali-formal-corpus](https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus)
-- [Boredoom17/nepali-colloquial-corpus](https://huggingface.co/datasets/Boredoom17/nepali-colloquial-corpus)
-- [Boredoom17/roman-nepali-corpus](https://huggingface.co/datasets/Boredoom17/roman-nepali-corpus)
+- [Boredoom17/nepali-flow](https://huggingface.co/datasets/Boredoom17/nepali-flow)
+- [Boredoom17/nepali-flow-formal](https://huggingface.co/datasets/Boredoom17/nepali-flow-formal)
+- [Boredoom17/nepali-flow-colloquial](https://huggingface.co/datasets/Boredoom17/nepali-flow-colloquial)
+- [Boredoom17/nepali-flow-roman](https://huggingface.co/datasets/Boredoom17/nepali-flow-roman)
 
 ## Key Features
 
@@ -147,21 +147,21 @@ See detailed licensing and attribution here:
 If you use this corpus, cite it as:
 
 ```
-Aadarsha Chhetri. (2026). Nepali Text Corpus. Hugging Face Datasets.
-https://huggingface.co/datasets/Boredoom17/nepali-text-corpus
+Aadarsha Chhetri. (2026). Nepali Flow. Hugging Face Datasets.
+https://huggingface.co/datasets/Boredoom17/nepali-flow
 ```
 
 **BibTeX:**
 ```bibtex
 @dataset{aadarsha2026nepali_corpus,
   author = {Aadarsha Chhetri},
-  title = {Nepali Text Corpus},
+  title = {Nepali Flow},
   year = {2026},
-  url = {https://huggingface.co/datasets/Boredoom17/nepali-text-corpus}
+  url = {https://huggingface.co/datasets/Boredoom17/nepali-flow}
 }
 ```
 
-**Casual mention:** "We used Aadarsha Chhetri's Nepali Text Corpus (2026)."
+**Casual mention:** "We used Aadarsha Chhetri's Nepali Flow (2026)."
 
 ## Maintainer
 
