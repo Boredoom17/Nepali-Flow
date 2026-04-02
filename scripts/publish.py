@@ -14,7 +14,6 @@ README_BY_REPO = {
     "Boredoom17/nepali-formal-corpus": "README_formal.md",
     "Boredoom17/nepali-colloquial-corpus": "README_colloquial.md",
     "Boredoom17/roman-nepali-corpus": "README_roman.md",
-    "Boredoom17/nepali-codemixed-corpus": "README_codemixed.md",
 }
 
 DATASETS = [
@@ -44,13 +43,6 @@ DATASETS = [
         "title": "Roman Nepali Corpus",
         "path": os.path.join(MERGED_DIR, "nepali_corpus_roman.parquet"),
         "description": "Roman-script Nepali subset from the colloquial corpus.",
-        "license_note": "Derived from YouTube comments."
-    },
-    {
-        "repo_id": "Boredoom17/nepali-codemixed-corpus",
-        "title": "Nepali Code-Mixed Corpus",
-        "path": os.path.join(MERGED_DIR, "nepali_corpus_codemixed.parquet"),
-        "description": "Mixed-script Nepali subset from the colloquial corpus.",
         "license_note": "Derived from YouTube comments."
     },
 ]
@@ -161,8 +153,8 @@ def build_docs(dataset: dict, rows: int) -> dict[str, str]:
         license_summary = "This subset is CC BY 4.0 and derived from the colloquial YouTube-comment corpus."
         source_summary = "This subset isolates Latin-script Nepali from the colloquial corpus."
     else:
-        license_summary = "This subset is CC BY 4.0 and derived from the colloquial YouTube-comment corpus."
-        source_summary = "This subset isolates mixed-script Nepali from the colloquial corpus."
+        license_summary = "This subset uses source-level licensing as documented in the repository."
+        source_summary = "This subset follows the corpus composition described in the dataset card."
 
     docs = {
         "LICENSE.md": dedent(

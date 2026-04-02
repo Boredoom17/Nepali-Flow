@@ -16,9 +16,7 @@ os.makedirs(OUT_DIR, exist_ok=True)
 FULL_PATH = os.path.join(OUT_DIR, "nepali_corpus_full.parquet")
 COLLOQUIAL_PATH = os.path.join(OUT_DIR, "nepali_corpus_colloquial.parquet")
 FORMAL_PATH = os.path.join(OUT_DIR, "nepali_corpus_formal.parquet")
-WIKI_PATH = os.path.join(OUT_DIR, "nepali_corpus_wikipedia.parquet")
 ROMAN_PATH = os.path.join(OUT_DIR, "nepali_corpus_roman.parquet")
-CODEMIXED_PATH = os.path.join(OUT_DIR, "nepali_corpus_codemixed.parquet")
 
 con = duckdb.connect()
 # These settings keep memory usage manageable on large files.
@@ -150,6 +148,11 @@ copy(
             WHEN 'mixed' THEN 2
             ELSE 3
         END,
+        CASE
+            WHEN length(text) > 100 THEN 0
+            WHEN length(text) > 50 THEN 1
+            ELSE 2
+        END,
         length(text) DESC,
         text
     """,
@@ -173,9 +176,7 @@ copy(
     """,
     FORMAL_PATH,
 )
-copy("SELECT * FROM corpus WHERE domain = 'encyclopedia' ORDER BY length(text) DESC, text", WIKI_PATH)
 copy("SELECT * FROM corpus WHERE script = 'latin' ORDER BY length(text) DESC, text", ROMAN_PATH)
-copy("SELECT * FROM corpus WHERE script = 'mixed' ORDER BY length(text) DESC, text", CODEMIXED_PATH)
 
 print("\nFinal corpus stats")
 stats = con.execute(
