@@ -56,7 +56,7 @@ All of this is fine to use. Just cite the IRIISNEPAL paper and individual source
 
 ### How to Cite This Work
 ```
-Chhetri, A. (2026). Nepali Text Corpus. Hugging Face Datasets.
+Aadarsha Chhetri (2026). Nepali Text Corpus. Hugging Face Datasets.
 https://huggingface.co/datasets/Boredoom17/nepali-text-corpus
 ```
 
