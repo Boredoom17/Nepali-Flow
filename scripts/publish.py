@@ -7,9 +7,17 @@ from huggingface_hub import HfApi
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MERGED_DIR = os.path.join(BASE_DIR, "data", "merged")
+README_DIR = os.path.join(BASE_DIR, "readmes")
+
+README_BY_REPO = {
+    "Boredoom17/nepali-text-corpus": "README_full.md",
+    "Boredoom17/nepali-formal-corpus": "README_formal.md",
+    "Boredoom17/nepali-colloquial-corpus": "README_colloquial.md",
+    "Boredoom17/roman-nepali-corpus": "README_roman.md",
+    "Boredoom17/nepali-codemixed-corpus": "README_codemixed.md",
+}
 
 DATASETS = [
-	# Keep each release explicit so you can publish subsets independently.
     {
         "repo_id": "Boredoom17/nepali-text-corpus",
         "title": "Nepali Text Corpus",
@@ -21,8 +29,8 @@ DATASETS = [
         "repo_id": "Boredoom17/nepali-formal-corpus",
         "title": "Nepali Formal Corpus",
         "path": os.path.join(MERGED_DIR, "nepali_corpus_formal.parquet"),
-        "description": "Formal Nepali text from IRIISNEPAL and news sources.",
-        "license_note": "Mixed license aggregate. IRIISNEPAL is MIT; news rows are source-dependent."
+        "description": "Formal Nepali text combining IRIISNEPAL, Wikipedia, and scraped news sources.",
+        "license_note": "Mixed-source formal aggregate (MIT + CC BY-SA 4.0 + source-dependent)."
     },
     {
         "repo_id": "Boredoom17/nepali-colloquial-corpus",
@@ -30,13 +38,6 @@ DATASETS = [
         "path": os.path.join(MERGED_DIR, "nepali_corpus_colloquial.parquet"),
         "description": "Colloquial and code-mixed Nepali text collected from YouTube comments.",
         "license_note": "YouTube-derived content with CC BY 4.0 metadata in the dataset."
-    },
-    {
-        "repo_id": "Boredoom17/nepali-wikipedia-corpus",
-        "title": "Nepali Wikipedia Corpus",
-        "path": os.path.join(MERGED_DIR, "nepali_corpus_wikipedia.parquet"),
-        "description": "Clean Nepali sentences extracted from the Nepali Wikipedia dump.",
-        "license_note": "CC BY-SA 4.0."
     },
     {
         "repo_id": "Boredoom17/roman-nepali-corpus",
@@ -56,12 +57,10 @@ DATASETS = [
 
 
 def row_count(path: str) -> int:
-	# Fast row count from parquet metadata (no full load needed).
     return pq.ParquetFile(path).metadata.num_rows
 
 
 def size_category(rows: int) -> str:
-	# Map row count to Hugging Face size bucket.
     if rows < 100_000:
         return "10K<n<100K"
     if rows < 1_000_000:
@@ -72,13 +71,12 @@ def size_category(rows: int) -> str:
 
 
 def build_readme(title: str, description: str, rows: int, path: str, license_note: str) -> str:
-	# Build a simple dataset card per repo.
     return dedent(
         f"""---
         pretty_name: {title}
         task_categories:
         - text-classification
-        - language-modeling
+        - text-generation
         language:
         - ne
         tags:
@@ -115,31 +113,203 @@ def build_readme(title: str, description: str, rows: int, path: str, license_not
     ).strip() + "\n"
 
 
-def main() -> None:
-	# Use HF_TOKEN from environment so credentials are not hardcoded.
-    token = os.environ.get("HF_TOKEN")
-    if not token:
-        raise SystemExit("HF_TOKEN is not set. Export it before publishing.")
+def load_readme(dataset: dict, rows: int) -> str:
+    readme_name = README_BY_REPO.get(dataset["repo_id"])
+    if readme_name:
+        readme_path = os.path.join(README_DIR, readme_name)
+        if os.path.exists(readme_path):
+            with open(readme_path, "r", encoding="utf-8") as f:
+                return f.read()
 
-    api = HfApi(token=token)
+    # Fallback if a curated card is missing.
+    return build_readme(
+        title=dataset["title"],
+        description=dataset["description"],
+        rows=rows,
+        path=dataset["path"],
+        license_note=dataset["license_note"],
+    )
+
+
+def build_docs(dataset: dict, rows: int) -> dict[str, str]:
+    repo_id = dataset["repo_id"]
+    title = dataset["title"]
+    filename = os.path.basename(dataset["path"])
+
+    if repo_id == "Boredoom17/nepali-text-corpus":
+        license_summary = (
+            "This repository is a mixed-license aggregate. Use the per-row license "
+            "column before redistribution or downstream release."
+        )
+        source_summary = (
+            "This corpus combines IRIISNEPAL news text, YouTube comments, Nepali "
+            "Wikipedia, and recent news scraping into a single unified release."
+        )
+    elif repo_id == "Boredoom17/nepali-formal-corpus":
+        license_summary = (
+            "This subset is a mixed-license formal aggregate built from MIT "
+            "(IRIISNEPAL), CC BY-SA 4.0 (Wikipedia), and source-dependent news rows."
+        )
+        source_summary = (
+            "This subset contains formal Nepali text from IRIISNEPAL, Nepali "
+            "Wikipedia, and scraped news sources."
+        )
+    elif repo_id == "Boredoom17/nepali-colloquial-corpus":
+        license_summary = "This subset is CC BY 4.0 in the dataset metadata."
+        source_summary = "This subset contains conversational Nepali collected from YouTube comments."
+    elif repo_id == "Boredoom17/roman-nepali-corpus":
+        license_summary = "This subset is CC BY 4.0 and derived from the colloquial YouTube-comment corpus."
+        source_summary = "This subset isolates Latin-script Nepali from the colloquial corpus."
+    else:
+        license_summary = "This subset is CC BY 4.0 and derived from the colloquial YouTube-comment corpus."
+        source_summary = "This subset isolates mixed-script Nepali from the colloquial corpus."
+
+    docs = {
+        "LICENSE.md": dedent(
+            f"""# License Summary
+
+            {license_summary}
+
+            ## Row-Level Guidance
+            - Check the `license` field in the parquet file before reuse.
+            - Preserve attribution for source material when required.
+            - Apply additional review before commercial redistribution.
+            """
+        ).strip()
+        + "\n",
+        "docs/OVERVIEW.md": dedent(
+            f"""# {title} Overview
+
+            Rows: {rows:,}
+
+            {source_summary}
+
+            ## Repository Contents
+            - `README.md`: dataset card
+            - `LICENSE.md`: license summary
+            - `docs/OVERVIEW.md`: high-level summary
+            - `docs/DATA_SCHEMA.md`: field descriptions
+            - `docs/DATA_SOURCES.md`: provenance notes
+            - `docs/USAGE.md`: loading examples
+            - `docs/QUALITY_AND_LIMITATIONS.md`: dataset caveats
+            - `CITATION.cff`: citation metadata
+            - `{filename}`: primary parquet file
+            """
+        ).strip()
+        + "\n",
+        "docs/DATA_SCHEMA.md": dedent(
+            """# Data Schema
+
+            Each row in the parquet file contains:
+
+            - `text`: the textual content
+            - `source`: the originating source or collection label
+            - `domain`: the broad category of the row
+            - `script`: script label such as `devanagari`, `latin`, or `mixed`
+            - `lang`: language tag used during preprocessing
+            - `date_collected`: collection or extraction date
+            - `license`: per-row license label
+
+            ## Notes
+            - These fields are intentionally simple so the dataset can be loaded in most NLP pipelines without custom parsing.
+            - Script and language labels are heuristic and are best treated as descriptive metadata rather than ground truth.
+            """
+        ).strip()
+        + "\n",
+        "docs/DATA_SOURCES.md": dedent(
+            f"""# Data Sources
+
+            {source_summary}
+
+            ## Provenance Notes
+            - The release is built from the local preprocessing pipeline in this repository.
+            - Source-specific filtering and deduplication are applied before export.
+            - The resulting parquet file is intended for research, evaluation, and dataset inspection.
+            """
+        ).strip()
+        + "\n",
+        "docs/USAGE.md": dedent(
+            f"""# Usage
+
+            ## Load with `datasets`
+            ```python
+            from datasets import load_dataset
+
+            ds = load_dataset(\"{repo_id}\")
+            print(ds)
+            ```
+
+            ## Load directly with pandas
+            ```python
+            import pandas as pd
+
+            df = pd.read_parquet(\"hf://datasets/{repo_id}/{filename}\")
+            print(df.head())
+            ```
+
+            ## Suggested Workflow
+            - Inspect `README.md` first.
+            - Review `LICENSE.md` before redistribution.
+            - Use the row-level metadata to filter by domain, script, or source.
+            """
+        ).strip()
+        + "\n",
+        "docs/QUALITY_AND_LIMITATIONS.md": dedent(
+            f"""# Quality and Limitations
+
+            ## Quality Notes
+            - The release is deduplicated and normalized through the preprocessing pipeline.
+            - The parquet order is arranged to make the dataset viewer open on more representative examples first.
+
+            ## Known Limitations
+            - Colloquial text includes slang, transliteration, and non-standard spelling.
+            - The corpus is not a benchmark suite with fixed splits.
+            - Metadata is descriptive and should be validated per task.
+
+            ## Intended Use
+            {dataset["description"]}
+            """
+        ).strip()
+        + "\n",
+        "CITATION.cff": dedent(
+            f"""cff-version: 1.2.0
+message: If you use this dataset, please cite it.
+title: {title}
+authors:
+  - family-names: Chhetri
+    given-names: Aadarsha
+year: 2026
+repository-code: https://huggingface.co/{repo_id}
+url: https://huggingface.co/datasets/{repo_id}
+"""
+        ).strip()
+        + "\n",
+    }
+
+    return docs
+
+
+def main() -> None:
+    # Use cached login token — run `python -c "from huggingface_hub import login; login()"` first
+    api = HfApi()
 
     for dataset in DATASETS:
-		# Validate local file first, then upload data + README.
         path = dataset["path"]
         if not os.path.exists(path):
-            raise SystemExit(f"Missing file: {path}")
+            print(f"⚠️  Skipping — file not found: {path}")
+            continue
 
         rows = row_count(path)
-        readme = build_readme(
-            title=dataset["title"],
-            description=dataset["description"],
-            rows=rows,
-            path=path,
-            license_note=dataset["license_note"],
-        )
+        readme = load_readme(dataset, rows)
+        docs = build_docs(dataset, rows)
 
-        print(f"Publishing {dataset['repo_id']} ({rows:,} rows)")
-        api.create_repo(repo_id=dataset["repo_id"], repo_type="dataset", private=True, exist_ok=True)
+        print(f"\nPublishing {dataset['repo_id']} ({rows:,} rows)...")
+        api.create_repo(
+            repo_id=dataset["repo_id"],
+            repo_type="dataset",
+            private=False,
+            exist_ok=True
+        )
         api.upload_file(
             path_or_fileobj=path,
             path_in_repo=os.path.basename(path),
@@ -152,8 +322,16 @@ def main() -> None:
             repo_id=dataset["repo_id"],
             repo_type="dataset",
         )
+        for path_in_repo, content in docs.items():
+            api.upload_file(
+                path_or_fileobj=io.BytesIO(content.encode("utf-8")),
+                path_in_repo=path_in_repo,
+                repo_id=dataset["repo_id"],
+                repo_type="dataset",
+            )
+        print(f"  ✅ https://huggingface.co/datasets/{dataset['repo_id']}")
 
-    print("Done. All datasets uploaded.")
+    print("\n🎉 All datasets published!")
 
 
 if __name__ == "__main__":

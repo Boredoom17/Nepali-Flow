@@ -119,12 +119,63 @@ def copy(query: str, path: str) -> None:
 
 print("Writing parquet outputs...")
 # One full file + focused subsets for easier Hugging Face publishing.
-copy("SELECT * FROM corpus", FULL_PATH)
-copy("SELECT * FROM corpus WHERE domain = 'colloquial'", COLLOQUIAL_PATH)
-copy("SELECT * FROM corpus WHERE domain = 'formal'", FORMAL_PATH)
-copy("SELECT * FROM corpus WHERE domain = 'encyclopedia'", WIKI_PATH)
-copy("SELECT * FROM corpus WHERE script = 'latin'", ROMAN_PATH)
-copy("SELECT * FROM corpus WHERE script = 'mixed'", CODEMIXED_PATH)
+# We order rows so dataset viewers surface cleaner, more representative samples first.
+copy(
+    """
+    SELECT *
+    FROM corpus
+    ORDER BY
+        CASE domain
+            WHEN 'formal' THEN 0
+            WHEN 'encyclopedia' THEN 1
+            WHEN 'news' THEN 2
+            WHEN 'colloquial' THEN 3
+            ELSE 4
+        END,
+        source,
+        length(text) DESC,
+        text
+    """,
+    FULL_PATH,
+)
+copy(
+    """
+    SELECT *
+    FROM corpus
+    WHERE domain = 'colloquial'
+    ORDER BY
+        CASE script
+            WHEN 'devanagari' THEN 0
+            WHEN 'latin' THEN 1
+            WHEN 'mixed' THEN 2
+            ELSE 3
+        END,
+        length(text) DESC,
+        text
+    """,
+    COLLOQUIAL_PATH,
+)
+copy(
+    """
+    SELECT *
+    FROM corpus
+    WHERE domain IN ('formal', 'news', 'encyclopedia')
+    ORDER BY
+        CASE domain
+            WHEN 'formal' THEN 0
+            WHEN 'encyclopedia' THEN 1
+            WHEN 'news' THEN 2
+            ELSE 3
+        END,
+        source,
+        length(text) DESC,
+        text
+    """,
+    FORMAL_PATH,
+)
+copy("SELECT * FROM corpus WHERE domain = 'encyclopedia' ORDER BY length(text) DESC, text", WIKI_PATH)
+copy("SELECT * FROM corpus WHERE script = 'latin' ORDER BY length(text) DESC, text", ROMAN_PATH)
+copy("SELECT * FROM corpus WHERE script = 'mixed' ORDER BY length(text) DESC, text", CODEMIXED_PATH)
 
 print("\nFinal corpus stats")
 stats = con.execute(
