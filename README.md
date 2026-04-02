@@ -44,7 +44,6 @@ All the raw data is in CSV format, and I merge it using DuckDB to create parquet
 - Reproducible publication workflow for Hugging Face datasets
 - License-aware output with per-row `license` field
 
-## Tech Stack
 
 ### Data Pipeline
 - Python
