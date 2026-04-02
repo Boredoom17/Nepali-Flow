@@ -87,12 +87,21 @@ The corpus is mixed-license. On Hugging Face, `other` means the dataset does not
 - Scraped news rows: source-dependent
 
 ## Citation
+If people ask how to cite this:
+
+```
+Aadarsha Chhetri. (2026). Nepali Text Corpus. Hugging Face Datasets.
+https://huggingface.co/datasets/Boredoom17/nepali-text-corpus
+```
+
+**BibTeX:**
 ```bibtex
-@dataset{chhetri2026nepali_text_corpus,
-  author    = {Aadarsha Chhetri},
-  title     = {Nepali Text Corpus},
-  year      = {2026},
-  publisher = {Hugging Face},
-  url       = {https://huggingface.co/datasets/Boredoom17/nepali-text-corpus}
+@dataset{aadarsha2026nepali_text_corpus,
+  author = {Aadarsha Chhetri},
+  title = {Nepali Text Corpus},
+  year = {2026},
+  url = {https://huggingface.co/datasets/Boredoom17/nepali-text-corpus}
 }
 ```
+
+**Or just:** "We used Aadarsha Chhetri's Nepali Text Corpus (2026)."

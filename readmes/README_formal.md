@@ -69,15 +69,15 @@ Mixed-source formal aggregate:
 ## How to Cite
 If you use this in research, cite it like:
 ```
-Chhetri, A. (2026). Nepali Formal Corpus. https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus
+Aadarsha Chhetri. (2026). Nepali Formal Corpus. https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus
 ```
 
 Or in BibTeX:
 ```bibtex
-@dataset{chhetri2026formal,
-  author  = {Aadarsha Chhetri},
-  title   = {Nepali Formal Corpus},
-  year    = {2026},
-  url     = {https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus}
+@dataset{aadarsha2026formal,
+  author = {Aadarsha Chhetri},
+  title = {Nepali Formal Corpus},
+  year = {2026},
+  url = {https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus}
 }
 ```

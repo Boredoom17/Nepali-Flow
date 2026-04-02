@@ -142,6 +142,27 @@ See detailed licensing and attribution here:
 - [readmes/ATTRIBUTION.md](readmes/ATTRIBUTION.md)
 - [readmes/DATA_PROCESSING.md](readmes/DATA_PROCESSING.md)
 
+## How to Cite
+
+If you use this corpus, cite it as:
+
+```
+Aadarsha Chhetri. (2026). Nepali Text Corpus. Hugging Face Datasets.
+https://huggingface.co/datasets/Boredoom17/nepali-text-corpus
+```
+
+**BibTeX:**
+```bibtex
+@dataset{aadarsha2026nepali_corpus,
+  author = {Aadarsha Chhetri},
+  title = {Nepali Text Corpus},
+  year = {2026},
+  url = {https://huggingface.co/datasets/Boredoom17/nepali-text-corpus}
+}
+```
+
+**Casual mention:** "We used Aadarsha Chhetri's Nepali Text Corpus (2026)."
+
 ## Maintainer
 
 Aadarsha Chhetri  

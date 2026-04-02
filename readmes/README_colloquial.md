@@ -49,6 +49,11 @@ Typical values:
 - script: devanagari, latin, mixed
 - license: CC BY 4.0
 
+## How to Cite
+```
+Aadarsha Chhetri. (2026). Nepali Colloquial Corpus. https://huggingface.co/datasets/Boredoom17/nepali-colloquial-corpus
+```
+
 ## Construction Notes
 - Video selection used broad Nepali-language query categories.
 - Comment rows were deduplicated and lightly cleaned for obvious noise.

@@ -38,7 +38,9 @@ If you're building a chatbot or NLP tool for Nepali, you need to handle Roman in
 - Mix of languages sometimes
 - Real YouTube data—unfiltered
 
-## License
-CC BY 4.0
+## How to Cite
+```
+Aadarsha Chhetri. (2026). Roman Nepali Corpus. https://huggingface.co/datasets/Boredoom17/roman-nepali-corpus
+```
 
 ---
