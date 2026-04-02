@@ -174,4 +174,4 @@ All parquet files use this schema:
 
 **Last Updated:** April 2, 2026  
 **Pipeline Version:** 1.0  
-**Maintainer:** Boredoom17
+**Maintainer:** Aadarsha Chhetri
