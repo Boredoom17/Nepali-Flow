@@ -39,7 +39,7 @@ When in doubt, credit the source and ask the dataset maintainer.
   author  = {Aadarsha Chhetri},
   title   = {Nepali Text Corpus},
   year    = {2026},
-  url     = {https://huggingface.co/datasets/Boredoom17/nepali-flow}
+  url     = {https://huggingface.co/datasets/Boredoom17/Nepali-Corpus}
 }
 ```
 

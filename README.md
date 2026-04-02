@@ -36,10 +36,10 @@ All the raw data is in CSV format, and I merge it using DuckDB to create parquet
 
 All four Hugging Face datasets are part of the same suite and each one is meant for a different use case:
 
-- [Boredoom17/Nepali-Flow](https://huggingface.co/datasets/Boredoom17/nepali-flow) - full mix of everything
-- [Boredoom17/Nepali-Flow-Formal](https://huggingface.co/datasets/Boredoom17/nepali-flow-formal) - polished text for formal NLP work
-- [Boredoom17/Nepali-Flow-Colloquial](https://huggingface.co/datasets/Boredoom17/nepali-flow-colloquial) - everyday Nepali and code-mixed text
-- [Boredoom17/Nepali-Flow-Roman](https://huggingface.co/datasets/Boredoom17/nepali-flow-roman) - Romanized Nepali
+- [Boredoom17/Nepali-Corpus](https://huggingface.co/datasets/Boredoom17/Nepali-Corpus) - full mix of everything
+- [Boredoom17/Nepali-Flow-Formal](https://huggingface.co/datasets/Boredoom17/Nepali-Flow-Formal) - polished text for formal NLP work
+- [Boredoom17/Nepali-Flow-Colloquial](https://huggingface.co/datasets/Boredoom17/Nepali-Flow-Colloquial) - everyday Nepali and code-mixed text
+- [Boredoom17/Nepali-Flow-Roman](https://huggingface.co/datasets/Boredoom17/Nepali-Flow-Roman) - Romanized Nepali
 
 ## Key Features
 
@@ -153,19 +153,21 @@ See detailed licensing and attribution here:
 If you use this corpus, cite it as:
 
 ```
-Aadarsha Chhetri. (2026). Nepali Flow. Hugging Face Datasets.
-https://huggingface.co/datasets/Boredoom17/nepali-flow
+Aadarsha Chhetri. (2026). Nepali-Corpus. Hugging Face Datasets.
+https://huggingface.co/datasets/Boredoom17/Nepali-Corpus
 ```
 
 **BibTeX:**
 ```bibtex
 @dataset{aadarsha2026nepali_corpus,
   author = {Aadarsha Chhetri},
-  title = {Nepali Flow},
+  title = {Nepali-Corpus},
   year = {2026},
-  url = {https://huggingface.co/datasets/Boredoom17/nepali-flow}
+  url = {https://huggingface.co/datasets/Boredoom17/Nepali-Corpus}
 }
 ```
+
+**Casual mention:** "We used Aadarsha Chhetri's Nepali-Corpus (2026)."
 
 ## Maintainer
 

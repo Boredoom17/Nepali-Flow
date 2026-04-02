@@ -1,9 +1,10 @@
-pretty_name: Nepali Flow: Roman
+---
+pretty_name: Nepali-Flow-Roman
 task_categories:
 - text-classification
 - translation
 language:
-...
+- ne
 tags:
 - nepali
 - roman-nepali
@@ -16,7 +17,7 @@ size_categories:
 - 100K<n<1M
 ---
 
-# Nepali Flow: Roman
+# Nepali-Flow-Roman
 
 ## What's This?
 Nepali written in Latin letters. How people type when they don't have a Nepali keyboard.
@@ -39,7 +40,7 @@ If you're building a chatbot or NLP tool for Nepali, you need to handle Roman in
 
 ## How to Cite
 ```
-Aadarsha Chhetri. (2026). Nepali Flow: Roman. https://huggingface.co/datasets/Boredoom17/nepali-flow-roman
+Aadarsha Chhetri. (2026). Nepali-Flow-Roman. https://huggingface.co/datasets/Boredoom17/Nepali-Flow-Roman
 ```
 
 ---

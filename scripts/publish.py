@@ -10,37 +10,37 @@ MERGED_DIR = os.path.join(BASE_DIR, "data", "merged")
 README_DIR = os.path.join(BASE_DIR, "readmes")
 
 README_BY_REPO = {
-    "Boredoom17/nepali-text-corpus": "README_full.md",
-    "Boredoom17/nepali-formal-corpus": "README_formal.md",
-    "Boredoom17/nepali-colloquial-corpus": "README_colloquial.md",
-    "Boredoom17/roman-nepali-corpus": "README_roman.md",
+    "Boredoom17/Nepali-Corpus": "README_full.md",
+    "Boredoom17/Nepali-Flow-Formal": "README_formal.md",
+    "Boredoom17/Nepali-Flow-Colloquial": "README_colloquial.md",
+    "Boredoom17/Nepali-Flow-Roman": "README_roman.md",
 }
 
 DATASETS = [
     {
-        "repo_id": "Boredoom17/nepali-text-corpus",
-        "title": "Nepali Text Corpus",
+        "repo_id": "Boredoom17/Nepali-Corpus",
+        "title": "Nepali-Corpus",
         "path": os.path.join(MERGED_DIR, "nepali_corpus_full.parquet"),
         "description": "Full combined Nepali text corpus covering colloquial, formal, and encyclopedia-style text.",
         "license_note": "Mixed-source corpus. See source-level notes in the card."
     },
     {
-        "repo_id": "Boredoom17/nepali-formal-corpus",
-        "title": "Nepali Formal Corpus",
+        "repo_id": "Boredoom17/Nepali-Flow-Formal",
+        "title": "Nepali-Flow-Formal",
         "path": os.path.join(MERGED_DIR, "nepali_corpus_formal.parquet"),
         "description": "Formal Nepali text combining IRIISNEPAL, Wikipedia, and scraped news sources.",
         "license_note": "Mixed-source formal aggregate (MIT + CC BY-SA 4.0 + source-dependent)."
     },
     {
-        "repo_id": "Boredoom17/nepali-colloquial-corpus",
-        "title": "Nepali Colloquial Corpus",
+        "repo_id": "Boredoom17/Nepali-Flow-Colloquial",
+        "title": "Nepali-Flow-Colloquial",
         "path": os.path.join(MERGED_DIR, "nepali_corpus_colloquial.parquet"),
         "description": "Colloquial and code-mixed Nepali text collected from YouTube comments.",
         "license_note": "YouTube-derived content with CC BY 4.0 metadata in the dataset."
     },
     {
-        "repo_id": "Boredoom17/roman-nepali-corpus",
-        "title": "Roman Nepali Corpus",
+        "repo_id": "Boredoom17/Nepali-Flow-Roman",
+        "title": "Nepali-Flow-Roman",
         "path": os.path.join(MERGED_DIR, "nepali_corpus_roman.parquet"),
         "description": "Roman-script Nepali subset from the colloquial corpus.",
         "license_note": "Derived from YouTube comments."
@@ -128,7 +128,7 @@ def build_docs(dataset: dict, rows: int) -> dict[str, str]:
     title = dataset["title"]
     filename = os.path.basename(dataset["path"])
 
-    if repo_id == "Boredoom17/nepali-text-corpus":
+    if repo_id == "Boredoom17/Nepali-Corpus":
         license_summary = (
             "This repository is a mixed-license aggregate. Use the per-row license "
             "column before redistribution or downstream release."
@@ -137,7 +137,7 @@ def build_docs(dataset: dict, rows: int) -> dict[str, str]:
             "This corpus combines IRIISNEPAL news text, YouTube comments, Nepali "
             "Wikipedia, and recent news scraping into a single unified release."
         )
-    elif repo_id == "Boredoom17/nepali-formal-corpus":
+    elif repo_id == "Boredoom17/Nepali-Flow-Formal":
         license_summary = (
             "This subset is a mixed-license formal aggregate built from MIT "
             "(IRIISNEPAL), CC BY-SA 4.0 (Wikipedia), and source-dependent news rows."
@@ -146,10 +146,10 @@ def build_docs(dataset: dict, rows: int) -> dict[str, str]:
             "This subset contains formal Nepali text from IRIISNEPAL, Nepali "
             "Wikipedia, and scraped news sources."
         )
-    elif repo_id == "Boredoom17/nepali-colloquial-corpus":
+    elif repo_id == "Boredoom17/Nepali-Flow-Colloquial":
         license_summary = "This subset is CC BY 4.0 in the dataset metadata."
         source_summary = "This subset contains conversational Nepali collected from YouTube comments."
-    elif repo_id == "Boredoom17/roman-nepali-corpus":
+    elif repo_id == "Boredoom17/Nepali-Flow-Roman":
         license_summary = "This subset is CC BY 4.0 and derived from the colloquial YouTube-comment corpus."
         source_summary = "This subset isolates Latin-script Nepali from the colloquial corpus."
     else:

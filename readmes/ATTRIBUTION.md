@@ -57,7 +57,7 @@ All of this is fine to use. Just cite the IRIISNEPAL paper and individual source
 ### How to Cite This Work
 ```
 Aadarsha Chhetri. (2026). Nepali Flow. Hugging Face Datasets.
-https://huggingface.co/datasets/Boredoom17/nepali-flow
+https://huggingface.co/datasets/Boredoom17/Nepali-Corpus
 ```
 
 ## Questions?

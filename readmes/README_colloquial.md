@@ -1,5 +1,5 @@
 ---
-pretty_name: Nepali Flow: Colloquial
+pretty_name: Nepali-Flow-Colloquial
 task_categories:
 - text-classification
 - other
@@ -18,7 +18,7 @@ size_categories:
 - 100K<n<1M
 ---
 
-# Nepali Flow: Colloquial
+# Nepali-Flow-Colloquial
 
 ## What's This?
 Real YouTube comments in Nepali. How people actually talk—casual, funny, sometimes messy. Useful if you want your model to understand everyday Nepali, not just formal news.
@@ -51,7 +51,7 @@ Typical values:
 
 ## How to Cite
 ```
-Aadarsha Chhetri. (2026). Nepali Flow: Colloquial. https://huggingface.co/datasets/Boredoom17/nepali-flow-colloquial
+Aadarsha Chhetri. (2026). Nepali-Flow-Colloquial. https://huggingface.co/datasets/Boredoom17/Nepali-Flow-Colloquial
 ```
 
 ## Construction Notes
@@ -79,9 +79,9 @@ CC BY 4.0.
 ```bibtex
 @dataset{chhetri2026nepali_colloquial,
   author    = {Aadarsha Chhetri},
-  title     = {Nepali Flow: Colloquial},
+  title     = {Nepali-Flow-Colloquial},
   year      = {2026},
   publisher = {Hugging Face},
-  url       = {https://huggingface.co/datasets/Boredoom17/nepali-flow-colloquial}
+  url       = {https://huggingface.co/datasets/Boredoom17/Nepali-Flow-Colloquial}
 }
 ```
