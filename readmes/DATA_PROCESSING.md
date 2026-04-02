@@ -157,22 +157,6 @@ All parquet files use this schema:
 | date_collected | string | ISO 8601 processing date |
 | license | string | Source license (MIT, CC BY 4.0, CC BY-SA 4.0, source-dependent) |
 
-## Known Limitations
-
-1. **YouTube content:** No content filtering; raw comments may contain offensive language
-2. **News licensing:** Publisher permissions uncertain; use cautiously in commercial settings
-3. **Script detection:** Simple regex-based; mixed-language text occasionally misclassified
-4. **Deduplication:** No semantic deduplication; similar paraphrases retained
-5. **Temporal bias:** Majority of data from 2020–2026; pre-2020 IRIIS content underrepresented
-
-## Future Improvements
-
-- [ ] Semantic deduplication using embeddings
-- [ ] Fine-grained toxicity filtering for colloquial subset
-- [ ] Add date ranges per source for temporal filtering
-- [ ] Multilingual metadata (code-mixed Hindi, English)
-- [ ] Validation splits for supervised task benchmarking
-
 ---
 
 **Last Updated:** April 2, 2026  
