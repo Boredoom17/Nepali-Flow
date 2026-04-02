@@ -1,67 +1,61 @@
-# License
+# License Information
 
-This corpus is a **mixed-source dataset** with multiple licenses. Each row is tagged with a `license` field indicating its source license.
+**Quick Version:** Different parts of this dataset have different licenses. Each row tells you which license applies to it.
 
-## License Breakdown by Source
+## What Can I Use?
 
-### IRIISNEPAL Dataset
-- **License:** MIT
-- **Rows:** ~6.0 million
-- **Source:** https://github.com/bnltm/IIIiSNepal
-- **Applies to:** `nepali-formal-corpus`
+| Source | License | Can I use it freely? |
+|--------|---------|-----|
+| IRIISNEPAL | MIT | ✅ Yes |
+| YouTube | CC BY 4.0 | ✅ Yes (credit them) |
+| Wikipedia | CC BY-SA 4.0 | ✅ Yes (share-alike) |
+| News | Source-dependent | ⚠️ Ask first |
 
-### Nepali Wikipedia
-- **License:** CC BY-SA 4.0
-- **Rows:** ~291,000
-- **Source:** Nepali Wikipedia dump
-- **Attribution:** Derived from Wikipedia contributors
-- **Applies to:** `nepali-formal-corpus`
+## How to Use Each One
 
-### Scraped News Sources
-- **License:** Source-dependent
-- **Rows:** ~87,000
-- **Sources:** 
-  - Kantipur News (private use)
-  - Setopati (private use)
-  - Nepal Khabar (private use)
-  - Nagarik (private use)
-  - Other Nepali news outlets
-- **Note:** News articles are included under fair-use research assumptions. Please verify licensing with original publishers for commercial use.
-- **Applies to:** `nepali-formal-corpus`
+### MIT (IRIISNEPAL)
+Use it however you want—research, commercial, whatever. Just include the MIT license somewhere in your code.
 
-### YouTube Comments
-- **License:** CC BY 4.0
-- **Rows:** ~431,000
-- **Source:** YouTube API (public comments)
-- **Attribution:** YouTube commenters
-- **Applies to:** `nepali-colloquial-corpus`, `roman-nepali-corpus`
+### CC BY 4.0 (YouTube)
+You can use it for anything, but you have to credit YouTube/the commenters.
 
-## Usage Guidance
+### CC BY-SA 4.0 (Wikipedia)
+You can use it, but if you build something with it, you have to release that under the same license too.
 
-- **For academic research:** All sources are permissible under academic fair-use principles.
-- **For commercial use:** Filter by license field. Use only MIT and CC BY 4.0 rows, or obtain permissions from news outlets.
-- **For compliance:** Review the `license` column in each dataset to filter by acceptable licenses for your use case.
+### Source-dependent (News)
+If it's for research: probably okay.  
+If it's for a commercial product: contact the news outlet first.
 
-## Recommended Attribution
+## In Practice
 
-If you use this corpus, cite it as:
-
+### For a research paper:
 ```
-@dataset{nepali_text_corpus_2026,
-  author = {Aadarsha Chhetri},
-  title = {Nepali Text Corpus},
-  year = {2026},
-  organization = {Hugging Face Datasets},
-  url = {https://huggingface.co/datasets/Boredoom17/nepali-text-corpus}
+This work uses the Nepali Text Corpus [1], which combines IRIISNEPAL [2], 
+Wikipedia, YouTube, and news data.
+
+[1] Chhetri (2026)
+[2] Yadav et al. (2020)
+```
+
+### For code:
+Check the `license` column in the parquet file. Filter to only MIT and CC BY 4.0 if you're unsure about commercial use.
+
+### For anything else:
+When in doubt, credit the source and ask the dataset maintainer.
+
+## BibTeX Citation
+
+```bibtex
+@dataset{chhetri2026nepali_corpus,
+  author  = {Aadarsha Chhetri},
+  title   = {Nepali Text Corpus},
+  year    = {2026},
+  url     = {https://huggingface.co/datasets/Boredoom17/nepali-text-corpus}
 }
 ```
 
-And acknowledge individual sources:
-- IRIISNEPAL for formal text
-- Wikipedia contributors for encyclopedia content
-- Nepali news outlets for journalism
-- YouTube commenters for colloquial speech
-
 ---
+
+**Not legal advice.** This is just a guide. Contact a lawyer if you're doing something commercial and unsure.
 
 **Last Updated:** April 2, 2026

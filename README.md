@@ -15,18 +15,18 @@
 
 </div>
 
-## Overview
+## What Is This?
 
-This project builds and maintains a large Nepali text corpus from multiple real-world sources: formal articles, encyclopedia text, news writing, and colloquial social-media language.
+I collected Nepali text from different places—formal writing, Wikipedia, news articles, and YouTube comments—and merged them into one big dataset. The point is to give NLP researchers cleaner data than what's usually available for Nepali.
 
-The pipeline is built for practical research use. You can scrape/collect sources, clean them, merge everything with DuckDB, and publish curated subsets directly to Hugging Face.
+Here's what I have:
 
-Current structure follows four primary public datasets:
+- **Full corpus** — everything combined (7.1M rows)
+- **Formal corpus** — IRIISNEPAL + Wikipedia + news (6.3M rows)
+- **Colloquial corpus** — YouTube comments - how people actually talk (431k rows)
+- **Roman corpus** — transliterated Nepali in Latin letters (307k rows)
 
-- Full corpus: everything combined
-- Formal corpus: IRIISNEPAL + Wikipedia + Nepali news
-- Colloquial corpus: YouTube comments (informal speech)
-- Roman corpus: Latin-script Nepali subset
+All the raw data is in CSV format, and I merge it using DuckDB to create parquet files that are easy to load into your ML pipeline.
 
 ## Hugging Face Datasets
 
@@ -62,11 +62,13 @@ Current structure follows four primary public datasets:
 - Hugging Face Hub (`huggingface_hub`)
 - Parquet (ZSTD compressed)
 
-## How It Works
+## How I Built It
 
 ```text
-Raw Source CSVs -> Cleaning + Normalization -> DuckDB Merge -> Stratified Parquet Outputs -> Hugging Face Publish
+Download/Scrape Sources → Clean & Tag → Merge with DuckDB → Export as Parquet → Upload to HF
 ```
+
+Each row has metadata tags: where it came from, what type of text it is, what script (Devanagari or Latin), and license info.
 
 ## Quick Start
 

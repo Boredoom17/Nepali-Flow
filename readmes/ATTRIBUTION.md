@@ -1,80 +1,68 @@
-# Attribution & Data Sources
+# Where the Data Came From
 
-This corpus synthesizes Nepali text from multiple public and research sources. Proper attribution is critical for ethical research.
+This dataset combines text from several sources. Each one has different rules about how you can use it. I've documented everything below so you know what to cite and what licenses apply.
 
-## Primary Sources
+## The Main Sources
 
-### 1. IRIISNEPAL
-- **Full Name:** IIIiSNepal - Itihasa, Kalakaram, Sthanadarshan, Shikshhya, Nepali Text Dataset
-- **Repository:** https://github.com/bnltm/IIIiSNepal
-- **Description:** A large-scale curated dataset of Nepali articles covering historical, cultural, educational, and geographical topics.
-- **License:** MIT
-- **Citation:**
-  ```
-  Yadav, Kanchan, et al. "IIIiSNepal: Large-Scale Annotated Nepali Text Dataset."
-  Proceedings of the 2nd Workshop on NLP for Under-resourced Languages, 2020.
-  ```
-- **Rows in Corpus:** 6,087,439
-- **Applies to:** `nepali-formal-corpus`, `nepali-text-corpus`
+### IRIISNEPAL Dataset
+The largest part (6M+ rows) of formal Nepali comes from IRIISNEPAL. This is a curated collection of Nepali articles built by researchers.
 
-### 2. Nepali Wikipedia
-- **Source:** Nepali Wikipedia Dump (latest as of corpus creation)
-- **URL:** https://dumps.wikimedia.org/newiki/
-- **Description:** Extracted sentences from Nepali Wikipedia articles across all topics and domains.
-- **License:** CC BY-SA 4.0
-- **Rows in Corpus:** 291,767
-- **Applies to:** `nepali-formal-corpus`, `nepali-text-corpus`
+**Citation:**  
+```
+Yadav, Kanchan, et al. "IIIiSNepal: A Large-Scale Annotated Nepali Text Dataset."
+Presented at the 2nd Workshop on NLP for Under-resourced Languages, 2020.
+```
 
-### 3. Nepali News Source Crawls
-- **Outlets Covered:**
-  - Kantipur News (https://www.kantipuronline.com/)
-  - Setopati (https://www.setopati.com/)
-  - Nepal Khabar (https://www.nepalkhabar.com/)
-  - Nagarik (https://www.nagariknews.com/)
-  - Himalayan Times (archived articles)
-  - Other regional outlets
-- **Description:** Dynamically crawled from public-facing news websites.
-- **License:** Source-dependent (per publisher terms of service)
-- **Rows in Corpus:** 87,250
-- **Applies to:** `nepali-formal-corpus`, `nepali-text-corpus`
+**License:** MIT (you can use this freely)  
+**Rows:** ~6,087,439
 
-### 4. YouTube Comments (Public)
-- **Source:** YouTube Data API v3 (public comment threads)
-- **Description:** Colloquial, conversational Nepali as used in social discussions, reviews, and community comments.
-- **License:** CC BY 4.0 (standard YouTube comment license)
-- **Rows in Corpus:** 431,648
-- **Applies to:** `nepali-colloquial-corpus`, `roman-nepali-corpus`, `nepali-text-corpus`
+### Nepali Wikipedia
+Wikipedia articles in Nepali (291k rows). Extracted from the public Wikipedia dump.
 
-## Contributor Acknowledgments
+**License:** CC BY-SA 4.0  
+**Source:** https://dumps.wikimedia.org/newiki/  
+**Rows:** ~291,767
 
-- **IRIISNEPAL Curators:** Kanchan Yadav, Sharad Khatiwada, and the broader NLP community contributors
-- **Wikipedia Contributors:** Nepali Wikipedia editor community
-- **News Publishers:** Journalists and editorial teams at Nepali news outlets
-- **YouTube Commenters:** Anonymous community members sharing public discourse
+### Nepali News Outlets
+Recent news articles scraped from public websites (87k rows).
 
-## Data Cleaning & Processing
+- Kantipur News
+- Setopati
+- Nepal Khabar
+- Nagarik
+- Himalayan Times
 
-All source data underwent standardization and validation:
-- Text normalization (whitespace, special characters)
-- Duplicate removal at the corpus level
-- Malformed record filtering
-- Length-based quality thresholds (minimum 5 words for formal text)
-- Script detection and classification (Devanagari, Latin, mixed)
+**License:** Source-dependent  
+**Rows:** ~87,250
 
-See [DATA_PROCESSING.md](DATA_PROCESSING.md) for technical details.
+### YouTube Comments
+Public comments from YouTube videos in Nepali (431k rows).
 
-## Responsible Use
+**License:** CC BY 4.0  
+**Rows:** ~431,648
 
-- **Academic Research:** Encouraged under fair-use principles
-- **Commercial Products:** Requires license-aware filtering and potential publisher permissions
-- **Media Attribution:** When publishing results, recommend citing source origins
-- **Ethical Concerns:** This corpus includes conversational YouTube content with occasional vulgar or offensive language; filter rows before public-facing applications
+**Fair Warning:** Real YouTube comments—unfiltered. Some may contain vulgar or offensive language.
 
-## Questions or Corrections?
+## What This Means For You
 
-For attribution corrections or to report improper use, contact the dataset maintainers through the Hugging Face dataset page.
+### For academic research:
+All of this is fine to use. Just cite the IRIISNEPAL paper and individual sources.
+
+### For commercial products:
+- ✅ Use MIT stuff (IRIISNEPAL) freely
+- ✅ Use CC BY 4.0 stuff (YouTube)—just credit them  
+- ⚠️ News articles—check each outlet's terms first
+- ⚠️ Wikipedia—you must share your code under CC BY-SA too
+
+### How to Cite This Work
+```
+Chhetri, A. (2026). Nepali Text Corpus. Hugging Face Datasets.
+https://huggingface.co/datasets/Boredoom17/nepali-text-corpus
+```
+
+## Questions?
+Each row has a `license` column. Check that before using data commercially. See [LICENSE.md](LICENSE.md) for more details.
 
 ---
 
-**Compiled:** April 2, 2026  
-**Corpus Version:** 1.0
+**Last Updated:** April 2, 2026

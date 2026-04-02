@@ -20,21 +20,16 @@ size_categories:
 
 # Nepali Formal Corpus
 
-## Abstract
-This subset isolates formal Nepali text with a strong emphasis on journalistic and editorial style. It is intended for experiments where grammatical consistency, formal register, and topical reporting language are prioritized over conversational variation.
+## What's This?
+This dataset has formal Nepali writing—the kind you'd find in news articles, encyclopedias, and research papers. Good for training language models on clear, well-written Nepali.
 
-## Dataset Composition
-Total rows: 6,735,808
+## What's Inside
+**6,735,808 rows** from three places:
+- IRIISNEPAL dataset (MIT license)
+- Nepali Wikipedia
+- Nepali news outlets (Kantipur, Setopati, etc.)
 
-Primary source groups:
-- IRIISNEPAL release
-- Nepali Wikipedia extraction
-- Scraped Nepali news sources
-
-Typical characteristics:
-- Predominantly Devanagari script
-- Formal register
-- News and editorial discourse structure
+Mostly in Devanagari script. Formal writing—no slang or memes.
 
 ## Schema
 - text
@@ -54,16 +49,16 @@ Notes:
 - Duplicate and malformed records are reduced during preprocessing.
 - Metadata is preserved to enable source-aware and license-aware filtering.
 
-## Research Use Cases
-- Formal Nepali pretraining and continued pretraining
+## Good For
+- Training language models on formal Nepali
 - News classification and topic modeling
-- Information extraction from standard prose
-- Register transfer experiments (formal to colloquial and vice versa)
+- Tasks where proper grammar matters
+- Understanding how formal Nepali differs from casual speech
 
-## Limitations
-- Coverage is news-heavy and may not transfer directly to social language tasks.
-- Editorial and publication bias from source outlets may be present.
-- A small number of scrape-era formatting artifacts can remain.
+## Fair Warnings
+- Mostly news articles—might not help with casual speech understanding
+- Some articles lean toward specific outlets' editorial styles
+- A few random formatting hiccups might be hiding in there
 
 ## License Statement
 Mixed-source formal aggregate:
@@ -71,13 +66,18 @@ Mixed-source formal aggregate:
 - CC BY-SA 4.0 (Wikipedia)
 - source-dependent (scraped news)
 
-## Citation
+## How to Cite
+If you use this in research, cite it like:
+```
+Chhetri, A. (2026). Nepali Formal Corpus. https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus
+```
+
+Or in BibTeX:
 ```bibtex
-@dataset{chhetri2026nepali_formal,
-  author    = {Aadarsha Chhetri},
-  title     = {Nepali Formal Corpus},
-  year      = {2026},
-  publisher = {Hugging Face},
-  url       = {https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus}
+@dataset{chhetri2026formal,
+  author  = {Aadarsha Chhetri},
+  title   = {Nepali Formal Corpus},
+  year    = {2026},
+  url     = {https://huggingface.co/datasets/Boredoom17/nepali-formal-corpus}
 }
 ```

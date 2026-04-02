@@ -22,10 +22,10 @@ source_datasets:
 - original
 ---
 
-# Nepali Text Corpus
+# Nepali Text Corpus (Full)
 
-## Abstract
-Nepali NLP resources are often limited by domain concentration, especially around formal news text. This corpus was assembled to provide broader linguistic coverage across formal, colloquial, encyclopedic, Roman-script, and code-mixed Nepali. The dataset is intended as a reusable foundation for language modeling and downstream low-resource NLP research.
+## What Is This?
+Everything combined—7.1 million rows of Nepali. News, Wikipedia, YouTube comments, all together. It's meant to be a solid foundation if you want to build NLP tools for Nepali.
 
 ## Dataset Composition
 Total rows: 7,167,456
@@ -38,11 +38,13 @@ Total rows: 7,167,456
 | Roman subset | 307,999 | Colloquial social text | Latin |
 | Code-mixed subset | 19,845 | Colloquial mixed-script text | Mixed |
 
-## Data Provenance
-- IRIISNEPAL release (MIT)
-- YouTube comment collection via API workflow (CC BY 4.0 metadata context)
-- Nepali Wikipedia dump extraction (CC BY-SA 4.0)
-- Additional Nepali news scraping for recent temporal coverage (source-dependent)
+## Where It Came From
+- **IRIISNEPAL** — a dataset of formal Nepali writing (6M rows)
+- **YouTube comments** — real conversations (431k rows)
+- **Wikipedia** — encyclopedia articles (291k rows)
+- **News articles** — from Nepali news websites (87k rows)
+
+Each row tells you where it came from and what license it's under.
 
 ## Schema
 Each record includes:

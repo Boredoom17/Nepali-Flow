@@ -19,57 +19,26 @@ size_categories:
 
 # Roman Nepali Corpus
 
-## Abstract
-This dataset is the Latin-script subset of colloquial Nepali text. It is designed for research on Roman Nepali, where Nepali is represented in non-standard Latin transliteration across social communication channels.
+## What's This?
+Nepali written in Latin letters. How people type when they don't have a Nepali keyboard.
 
-## Dataset Composition
-Total rows: 307,999
+**307,999 comments** from YouTube, all in Latin script.
 
-Characteristics:
-- Script: latin
-- Domain: colloquial/social
-- Source: youtube_comments subset
+## Why It Matters
+If you're building a chatbot or NLP tool for Nepali, you need to handle Roman input. This dataset helps.
 
-## Motivation
-Roman Nepali is common in practice but remains underrepresented in public Nepali datasets. This subset supports:
-- transliteration and normalization research
-- script-robust language modeling
-- handling non-standard spelling in user-generated text
+## Good For
+- Models that understand Roman Nepali
+- Roman → Devanagari converters
+- Chatbots
+- Understanding how people type
 
-## Schema
-- text
-- source
-- domain
-- script
-- lang
-- date_collected
-- license
-
-Typical values:
-- script: latin
-- lang: ne-roman (or unknown in ambiguous cases)
-- license: CC BY 4.0
-
-## Research Use Cases
-- Roman-to-Devanagari conversion
-- Informal Nepali chatbot input handling
-- Social-text tokenization and normalization research
-
-## Limitations
-- Roman spelling is non-standard and highly variable.
-- Multiple spellings may represent the same Nepali word.
-- Some rows include mixed-language tokens.
+## Heads Up
+- Spelling is all over the place (no standard way to romanize)
+- Mix of languages sometimes
+- Real YouTube data—unfiltered
 
 ## License
-CC BY 4.0.
+CC BY 4.0
 
-## Citation
-```bibtex
-@dataset{chhetri2026roman_nepali,
-  author    = {Aadarsha Chhetri},
-  title     = {Roman Nepali Corpus},
-  year      = {2026},
-  publisher = {Hugging Face},
-  url       = {https://huggingface.co/datasets/Boredoom17/roman-nepali-corpus}
-}
-```
+---

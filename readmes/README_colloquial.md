@@ -20,25 +20,19 @@ size_categories:
 
 # Nepali Colloquial Corpus
 
-## Abstract
-This subset targets colloquial Nepali as used in social media environments. It was constructed to complement formal Nepali corpora by capturing informal lexical choices, transliterated Roman Nepali, and mixed-script writing patterns.
+## What's This?
+Real YouTube comments in Nepali. How people actually talk—casual, funny, sometimes messy. Useful if you want your model to understand everyday Nepali, not just formal news.
 
-## Dataset Composition
-Total rows: 431,648
+## What's Inside
+**431,648 comments** from YouTube videos:
+- 307,999 in Latin letters ("Roman Nepali")
+- 103,804 in Devanagari
+- 19,845 mixed (people switching between scripts)
 
-Script distribution:
-- Latin (Roman Nepali): 307,999
-- Devanagari: 103,804
-- Mixed: 19,845
+All CC BY 4.0 license (from YouTube's terms).
 
-Primary source:
-- YouTube comments collected through API-based pipelines
-
-## Motivation
-Existing Nepali resources are often skewed toward formal text. This subset improves coverage for:
-- colloquial phrasing and discourse markers
-- transliterated Nepali written in Latin script
-- platform-native mixed-script behavior
+## Why This Matters
+Most Nepali datasets are just news and books. This one shows how real people write—with slang, code-switching, and the way language actually works on the internet.
 
 ## Schema
 - text

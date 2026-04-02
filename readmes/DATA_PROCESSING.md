@@ -1,82 +1,95 @@
-# Data Processing Pipeline
+# How I Built This Corpus
 
-This document describes the technical workflow for constructing and maintaining the Nepali Text Corpus.
+This document explains how the data was collected, cleaned, and organized.
 
-## Overview
+## The Simple Version
 
-The corpus is built using a DuckDB-based pipeline (`scripts/merge.py`) that ingests raw CSVs, applies filtering and normalization, and produces stratified parquet outputs optimized for different research domains.
+I took 4 different sources, cleaned them up, tagged each row with metadata, and merged everything into one big parquet file that's easy to load.
 
 ```
-Raw Data (CSV) → Validation & Normalization → Domain Stratification → Parquet Output
+Raw CSVs → Tag & Clean → Merge → Parquet files
 ```
 
-## Input Sources
+## Where the Data Comes From
 
-| Source | File | Format | Records | Notes |
-|--------|------|--------|---------|-------|
-| IRIISNEPAL | `iriisnepal_raw.csv` | CSV | ~6.1M | Manually curated formal Nepali |
-| YouTube | `youtube_comments_clean.csv` | CSV | ~431K | Pre-cleaned by `clean.py` |
-| Wikipedia | `wikipedia_nepali.csv` | CSV | ~291K | Extracted from wiki dump |
-| News | `nepali_news.csv` | CSV | ~87K | Scraped from live news feeds |
+| Source | Rows | Notes |
+|--------|------|-------|
+| IRIISNEPAL | 6.1M | Curated formal Nepali |
+| YouTube | 431K | Real comments |
+| Wikipedia | 291K | Articles |
+| News sites | 87K | Recent articles |
 
-## Preprocessing Steps
+## What I Did to Clean It
 
-### 1. Text Validation
-All records are filtered on:
-- **Non-null check:** `text IS NOT NULL`
-- **Non-empty check:** `trim(text) <> ''`
-- **Minimum length (IRIIS only):** `length(split(trim(text), ' ')) >= 5` (5+ words)
-- **Script validation (IRIIS only):** Must contain at least one Devanagari character
+1. **Removed empty rows** — Got rid of null/blank entries
+2. **Filtered by length** — Kept rows with at least 5 words for formal text
+3. **Checked the script** — Identified if text was Devanagari, Latin, or mixed
+4. **Added metadata** — Tagged each row with: source, domain, script, language, date, license
 
-### 2. Script Detection
-Automatic classification for news and YouTube sources:
+## What Each Row Gets
+
 ```
-IF text contains [ऀ-ॿ] THEN 'devanagari'
-ELSE IF text contains [A-Za-z] THEN 'latin'
-ELSE 'other'
+text              — the actual text
+source            — where it came from (e.g., "iriisnepal", "youtube_comments")
+domain            — type of text (formal, colloquial, encyclopedia, news)
+script            — writing system (devanagari, latin, mixed)
+lang              — language code (ne for Nepali, ne-roman for Roman Nepali)
+date_collected    — when it was processed
+license           — which license applies
 ```
 
-### 3. Metadata Assignment
-Each row is enriched with:
-- **source:** Origin identifier (e.g., `iriisnepal`, `youtube_comments`, `wikipedia_nepali`)
-- **domain:** Content category (formal, colloquial, encyclopedia, news)
-- **script:** Writing system detected
-- **lang:** ISO 639-1 code (`ne` for Nepali)
-- **date_collected:** Processing date
-- **license:** Source-specific license
+## The Output Files
 
-### 4. Deduplication
-- No exact-duplicate removal (preserves all unique utterances)
-- Partial duplicates retained (colloquial speech naturally repeats common phrases)
+All four datasets are parquet files (compressed, efficient):
 
-## Output Datasets
+- **nepali_corpus_full.parquet** (5.0 GB)
+  - Everything combined
+  - 7.1M rows
+  - Ordered: formal first, then encyclopedia, news, colloquial
 
-### nepali_corpus_full.parquet
-**Purpose:** Complete merged corpus for general research  
-**Rows:** 7,167,456  
-**Ordering:**
-1. Formal domain (IRIISNEPAL)
-2. Encyclopedia domain (Wikipedia)
-3. News domain
-4. Colloquial domain (YouTube)
+- **nepali_corpus_formal.parquet** (4.9 GB)
+  - Formal + Wikipedia + news
+  - 6.3M rows
+  - Best for language model training
 
-Within each domain, ordered by `source`, then `length DESC` for visibility.
+- **nepali_corpus_colloquial.parquet** (16 MB)
+  - YouTube comments
+  - 431K rows
+  - Real, informal speech
 
-### nepali_corpus_formal.parquet
-**Purpose:** Formal writing for LM pretraining  
-**Rows:** 6,378,206 (formal + encyclopedia + news)  
-**Domains included:** `formal`, `encyclopedia`, `news`  
-**Ordering:** Domain priority → source → length DESC
+- **nepali_corpus_roman.parquet** (9.0 MB)
+  - Latin-script only
+  - 307K rows
+  - Roman Nepali subset
 
-**Professional dataset preview:** Leading rows are formal Wikipedia and news articles (clean, representative examples).
+## Why DuckDB?
 
-### nepali_corpus_colloquial.parquet
-**Purpose:** Conversational Nepali for sociolinguistic analysis  
-**Rows:** 431,648 (YouTube comments only)  
-**Script distribution:**
-- Devanagari: 123,804 comments
-- Latin (Roman): 307,999 comments
-- Mixed: 19,845 comments
+I used DuckDB because it's fast, handles large files, and doesn't need a database server. All code is in [scripts/merge.py](../scripts/merge.py).
+
+## What I Didn't Do
+
+- **Deduplication:** I didn't remove similar rows because real speech has repetition
+- **Heavy filtering:** Some YouTube comments are messy on purpose—that's real data
+- **Rebalancing:** Kept the natural distribution of sources
+
+## If You Want to Rebuild This
+
+```bash
+python scripts/merge.py
+```
+
+It will regenerate all parquet files from the raw CSVs.
+
+## Known Issues
+
+- Some Wikipedia rows have odd formatting (extraction artifacts)
+- News articles have varying publish dates
+- YouTube comments are raw—no content filtering
+- Roman Nepali spelling is all over the place (on purpose)
+
+---
+
+**Built:** April 2, 2026
 
 **Ordering:** Devanagari (longest first) → Latin → Mixed (ensures Hugging Face viewer surfaces Devanagari examples first)
 
