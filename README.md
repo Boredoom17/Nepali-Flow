@@ -70,7 +70,7 @@ All four Hugging Face datasets are part of the same suite and each one is meant 
 ## How I Built It
 
 ```text
-Download/Scrape Sources → Clean & Tag → Merge with DuckDB → Export as Parquet → Upload to HF
+Download/Scrape Sources → Clean & Tag → Merge with DuckDB → Export as Parquet → Upload to HuggingFace.
 ```
 
 Each row has metadata tags: where it came from, what type of text it is, what script (Devanagari or Latin), and license info.
